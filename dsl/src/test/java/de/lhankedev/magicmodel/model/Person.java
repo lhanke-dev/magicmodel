@@ -1,8 +1,13 @@
 package de.lhankedev.magicmodel.model;
 
-import lombok.Value;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
+@FieldDefaults(level=AccessLevel.PRIVATE)
+@ToString
 public class Person {
 
     String foreName;

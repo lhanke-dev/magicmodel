@@ -11,11 +11,10 @@ import java.util.Optional;
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 @ToString
-public class ObjectDefinition {
+public class MagicModelDefinition {
 
-    String type;
-    Optional<String> id;
-    Optional<String> parent;
-    List<AttributeDefinition> attributes;
+    String name;
+    Optional<String> namespace;
+    List<ObjectDefinition> objects;
 
 }

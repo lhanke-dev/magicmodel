@@ -1,5 +1,5 @@
-Modelname: CarTestToNParentReference;
-Namespace: de.lhankedev.magicmodel.model;
+Modelname: CarTestToNParentReference
+Namespace: de.lhankedev.magicmodel.model
 
 Car(testCar):
     - manufacturer: TestManufacturer

@@ -3,8 +3,10 @@
  */
 package de.lhankedev.magicmodel;
 
+import de.lhankedev.magicmodel.exception.MagicModelCreationException;
+
 public interface MagicModelFactory {
 
-    <T> T createModel(String modelName, Class<T> modelClazz);
+    MagicModel createModel(String modelName) throws MagicModelCreationException;
 
 }

@@ -1,10 +1,15 @@
 package de.lhankedev.magicmodel.model;
 
-import lombok.Value;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
+@FieldDefaults(level=AccessLevel.PRIVATE)
+@ToString
 public class Car {
 
     String manufacturer;

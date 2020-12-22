@@ -20,9 +20,9 @@ public class AttributeDefinitionAssertion extends AbstractAssert<AttributeDefini
         return this;
     }
 
-    public AttributeDefinitionAssertion hasValue(final String value) {
-        Assertions.assertThat(actual.getAttributeValue())
-                .isEqualTo(value);
+    public AttributeDefinitionAssertion hasValues(final String ... values) {
+        Assertions.assertThat(actual.getAttributeValues())
+                .containsExactlyInAnyOrder(values);
         return this;
     }
 

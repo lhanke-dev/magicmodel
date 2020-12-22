@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Mapper(uses = {
@@ -17,18 +18,22 @@ import java.util.stream.Collectors;
         Collectors.class,
         MagicmodelParser.ObjectParentContext.class,
         MagicmodelParser.ObjectIdContext.class,
-        TerminalNode.class
+        TerminalNode.class,
+        Optional.class,
+        String.class
 })
 public interface ObjectDefinitionMapper {
 
     ObjectDefinitionMapper INSTANCE = Mappers.getMapper(ObjectDefinitionMapper.class);
 
     @Mappings({
-            @Mapping(expression = "java(java.util.Optional.ofNullable(objectDefinition.objectId())" +
-                    ".map(ObjectIdContext::getText))",
+            @Mapping(expression = "java(Optional.ofNullable(objectDefinition.objectId())" +
+                    ".map(ObjectIdContext::getText)" +
+                    ".map(String::trim))",
                     target = "id"),
-            @Mapping(expression = "java(java.util.Optional.ofNullable(objectDefinition.objectParent())" +
-                    ".map(ObjectParentContext::getText))",
+            @Mapping(expression = "java(Optional.ofNullable(objectDefinition.objectParent())" +
+                    ".map(ObjectParentContext::getText)" +
+                    ".map(String::trim))",
                     target = "parent"),
             @Mapping(expression = "java(objectDefinition.qualifiedName().getText())", target = "type"),
             @Mapping(expression = "java(objectDefinition.attributeDefinition()" +

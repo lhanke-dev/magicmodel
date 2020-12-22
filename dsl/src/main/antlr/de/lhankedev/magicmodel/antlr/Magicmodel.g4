@@ -10,19 +10,19 @@ modeldefinition:
     objectDefinition*;
 
 modelDeclaration:
-    MODEL COLON modelName SEMICOLON;
+    MODEL COLON modelName NEWLINE+;
 
 modelName:
     IDENTIFIER;
 
 namespace:
-    NAMESPACE COLON qualifiedName SEMICOLON;
+    NAMESPACE COLON qualifiedName NEWLINE+;
 
 objectDefinition:
-    (objectParent GREATER_THAN)? qualifiedName (OPENING_BRACE objectId CLOSING_BRACE)? (COLON attributeDefinition+);
+    (objectParent GREATER_THAN)? qualifiedName (OPENING_BRACE objectId CLOSING_BRACE)? (COLON NEWLINE+ attributeDefinition+);
 
 objectParent:
-    IDENTIFIER DOT IDENTIFIER;
+    (IDENTIFIER DOT)? IDENTIFIER;
 
 objectId:
     IDENTIFIER;
@@ -34,7 +34,14 @@ attributeName:
     IDENTIFIER;
 
 attributeValue:
-    HASH? IDENTIFIER;
+    singleValue
+    | (NEWLINE+ listValue);
+
+singleValue:
+    HASH? (IDENTIFIER | DOT)+ (NEWLINE+ | <EOF>);
+
+listValue:
+    (HYPHEN singleValue)+;
 
 qualifiedName:
     IDENTIFIER (DOT IDENTIFIER)*;
@@ -50,7 +57,7 @@ OPENING_BRACE: '(';
 CLOSING_BRACE: ')';
 HASH: '#';
 GREATER_THAN: '>';
-
-WS: [ \r\n\t]+ -> skip;
+NEWLINE: [\n];
+WS: [ \r\t]+ -> skip;
 
 IDENTIFIER: [a-zA-Z0-9_]+;

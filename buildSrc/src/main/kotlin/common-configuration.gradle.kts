@@ -13,7 +13,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")
-    implementation("commons-io:commons-io:${apacheCommonsVersion}")
+    implementation("org.apache.commons:commons-lang3:${apacheCommonsLangVersion}")
+    implementation("commons-io:commons-io:${apacheCommonsIoVersion}")
 
     implementation("org.mapstruct:mapstruct:${mapStructVersion}")
     annotationProcessor("org.mapstruct:mapstruct-processor:${mapStructVersion}")
@@ -26,6 +27,8 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation( "ch.qos.logback:logback-classic:${logbackVersion}")
 }
 
 tasks.test {

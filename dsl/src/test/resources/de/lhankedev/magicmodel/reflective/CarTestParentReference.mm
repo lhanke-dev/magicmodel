@@ -1,5 +1,5 @@
-Modelname: CarTestParentReference;
-Namespace: de.lhankedev.magicmodel.model;
+Modelname: CarTestParentReference
+Namespace: de.lhankedev.magicmodel.model
 
 Car(testCar):
     - manufacturer: TestManufacturer

@@ -1,19 +1,19 @@
 package de.lhankedev.magicmodel.assertion;
 
-import de.lhankedev.magicmodel.model.MagicModel;
+import de.lhankedev.magicmodel.model.MagicModelDefinition;
 import de.lhankedev.magicmodel.model.ObjectDefinition;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
 import java.util.Optional;
 
-public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, MagicModel> {
+public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, MagicModelDefinition> {
 
-    private MagicModelAssertion(final MagicModel actual) {
+    private MagicModelAssertion(final MagicModelDefinition actual) {
         super(actual, MagicModelAssertion.class);
     }
 
-    public static MagicModelAssertion assertThat(final MagicModel actual) {
+    public static MagicModelAssertion assertThat(final MagicModelDefinition actual) {
         return new MagicModelAssertion(actual);
     }
 
@@ -24,7 +24,10 @@ public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, Mag
     }
 
     public MagicModelAssertion hasNamespace(final String namespace) {
-        Assertions.assertThat(actual.getNamespace())
+        Optional<String> actualNamespace = actual.getNamespace();
+        Assertions.assertThat(actualNamespace)
+                .isPresent();
+        Assertions.assertThat(actualNamespace.get())
                 .isEqualTo(namespace);
         return this;
     }

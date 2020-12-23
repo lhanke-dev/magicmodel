@@ -13,9 +13,6 @@ import de.lhankedev.magicmodel.resources.MagicModelResourceProvider;
 import de.lhankedev.magicmodel.resources.Resource;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,25 +34,18 @@ public class ReflectiveMMFactory implements MagicModelFactory {
     private final MagicModelDefinitionMapper mapper;
 
     private final List<ModelCreationPhase> phases;
-    private final Reflections reflections;
 
     public ReflectiveMMFactory() {
         this.resourceProvider = new ClassPathResourceProvider(".*\\.mm");
         this.mapper = MagicModelDefinitionMapper.INSTANCE;
         this.phases = setupPhases();
-        this.reflections = setupReflections();
-    }
-
-    protected Reflections setupReflections() {
-        final ConfigurationBuilder configBuilder = new ConfigurationBuilder()
-                .addClassLoader(ClasspathHelper.contextClassLoader());
-        return new Reflections(configBuilder);
     }
 
     protected List<ModelCreationPhase> setupPhases() {
         return Arrays.asList(
                 new ObjectCreationPhase(),
-                new PrimitiveFieldInstantiationPhase()
+                new PrimitiveFieldInstantiationPhase(),
+                new ObjectLinkingPhase()
         );
     }
 
@@ -74,7 +64,7 @@ public class ReflectiveMMFactory implements MagicModelFactory {
         }
 
         final MagicModelDefinition magicModelDefinition = modelDefinitions.get(0);
-        final ModelCreationContext context = new ModelCreationContext(magicModelDefinition, reflections);
+        final ModelCreationContext context = new ModelCreationContext(magicModelDefinition);
 
         try {
             phases.stream()

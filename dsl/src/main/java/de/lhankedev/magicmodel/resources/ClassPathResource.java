@@ -1,5 +1,6 @@
 package de.lhankedev.magicmodel.resources;
 
+import de.lhankedev.magicmodel.reflective.MagicModelReflections;
 import lombok.Value;
 
 import java.io.InputStream;
@@ -8,11 +9,11 @@ import java.io.InputStream;
 public class ClassPathResource implements Resource {
 
     String classPathLocation;
-    ClassLoader classLoader;
+    MagicModelReflections reflections;
 
     @Override
     public InputStream open() {
-        return classLoader.getResourceAsStream(classPathLocation);
+        return reflections.openResource(classPathLocation);
     }
 
 }

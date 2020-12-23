@@ -5,9 +5,11 @@ package de.lhankedev.magicmodel.reflective;
 
 import de.lhankedev.magicmodel.MagicModel;
 import de.lhankedev.magicmodel.MagicModelFactory;
+import de.lhankedev.magicmodel.assertion.EngineAssertion;
 import de.lhankedev.magicmodel.assertion.MobilePhoneAssertion;
 import de.lhankedev.magicmodel.assertion.TerminalTypeTestAssertion;
 import de.lhankedev.magicmodel.exception.MagicModelCreationException;
+import de.lhankedev.magicmodel.model.Car;
 import de.lhankedev.magicmodel.model.TerminalTypeTest;
 import de.lhankedev.magicmodel.model.directaccess.MobilePhone;
 import org.assertj.core.api.Assertions;
@@ -99,6 +101,20 @@ class ReflectiveMMFactoryTest {
                 .hasDoubleSet(1.1, 1.2)
                 .hasFloatSet(1.3f, 1.4f)
                 .hasStringSet("testString1", "testString2");
+    }
+
+    @Test
+    void testReferenceInSingleAttribute() throws MagicModelCreationException {
+        MagicModel magicModel = factory.createModel("SingleValueReference");
+        Optional<Car> car = magicModel.getObjectById("testCar", Car.class);
+
+        Assertions.assertThat(car)
+                .isPresent();
+
+        EngineAssertion.assertThat(car.get().getEngine())
+                .isNotNull()
+                .hasHorsePower(205)
+                .hasDisplacement(4009);
     }
 
 }

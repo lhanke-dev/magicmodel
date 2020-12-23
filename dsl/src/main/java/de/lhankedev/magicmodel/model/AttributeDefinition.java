@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@FieldDefaults(level= AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class AttributeDefinition {
 

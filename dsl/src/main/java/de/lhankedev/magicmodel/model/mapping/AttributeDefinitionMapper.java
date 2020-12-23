@@ -26,9 +26,9 @@ public interface AttributeDefinitionMapper {
             @Mapping(expression = "java(attributeDefinition.attributeName().getText().trim())", target = "attributeName"),
             @Mapping(expression = "java(attributeDefinition.attributeValue().singleValue() == null ? " +
                     "attributeDefinition.attributeValue().listValue().singleValue().stream()" +
-                        ".map(SingleValueContext::getText)" +
-                        ".map(String::trim)" +
-                        ".collect(Collectors.toList()) : " +
+                    ".map(SingleValueContext::getText)" +
+                    ".map(String::trim)" +
+                    ".collect(Collectors.toList()) : " +
                     "Collections.singletonList(attributeDefinition.attributeValue().singleValue().getText().trim()))",
                     target = "attributeValues")}
     )

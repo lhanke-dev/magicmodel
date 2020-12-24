@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "magicmodel"
-include("dsl")
+include("core")

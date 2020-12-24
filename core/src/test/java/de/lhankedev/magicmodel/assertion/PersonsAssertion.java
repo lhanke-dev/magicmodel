@@ -24,7 +24,7 @@ public class PersonsAssertion extends AbstractAssert<PersonsAssertion, Collectio
         return this;
     }
 
-    public PersonsAssertion contains(final String foreName, final String lastName, final String age) {
+    public PersonsAssertion contains(final String foreName, final String lastName, final int age) {
 
         Assertions.assertThat(actual)
                 .isNotNull();

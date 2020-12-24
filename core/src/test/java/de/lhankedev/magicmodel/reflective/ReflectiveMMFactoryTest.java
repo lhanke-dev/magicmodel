@@ -5,9 +5,7 @@ package de.lhankedev.magicmodel.reflective;
 
 import de.lhankedev.magicmodel.MagicModel;
 import de.lhankedev.magicmodel.MagicModelFactory;
-import de.lhankedev.magicmodel.assertion.EngineAssertion;
-import de.lhankedev.magicmodel.assertion.MobilePhoneAssertion;
-import de.lhankedev.magicmodel.assertion.TerminalTypeTestAssertion;
+import de.lhankedev.magicmodel.assertion.*;
 import de.lhankedev.magicmodel.exception.MagicModelCreationException;
 import de.lhankedev.magicmodel.model.Car;
 import de.lhankedev.magicmodel.model.TerminalTypeTest;
@@ -115,6 +113,20 @@ class ReflectiveMMFactoryTest {
                 .isNotNull()
                 .hasHorsePower(205)
                 .hasDisplacement(4009);
+    }
+
+    @Test
+    void testReferenceInCollectionAttribute() throws MagicModelCreationException {
+        MagicModel magicModel = factory.createModel("CollectionValueReference");
+        Optional<Car> car = magicModel.getObjectById("testCar", Car.class);
+
+        Assertions.assertThat(car)
+                .isPresent();
+
+        PersonsAssertion.assertThat(car.get().getPreviousOwners())
+                .hasSize(2)
+                .contains("Ele", "Phant", 28)
+                .contains("Dino", "Saur", 21);
     }
 
 }

@@ -35,7 +35,10 @@ public class MagicModelDefinitionMapperTest {
             final MagicModelAssertion exampleModelAssertion = MagicModelAssertion.assertThat(magicModelDefinition)
                     .hasName("FullExampleModel")
                     .hasNamespace("de.lhankedev.magicmodel.model")
-                    .hasObjectCount(5);
+                    .hasObjectCount(6);
+
+            exampleModelAssertion.getObjectById("emptyCar")
+                    .isNotNull();
 
             final ObjectDefinitionAssertion carAssertion = exampleModelAssertion.getObjectById("testCar")
                     .isNotNull()
@@ -73,7 +76,7 @@ public class MagicModelDefinitionMapperTest {
                     .hasName("displacement")
                     .hasValues("4009");
 
-            final ObjectDefinitionAssertion ownerAssertion = exampleModelAssertion.getObject(2)
+            final ObjectDefinitionAssertion ownerAssertion = exampleModelAssertion.getObject(3)
                     .isNotNull()
                     .hasType("Person")
                     .hasParent("testCar.owner");

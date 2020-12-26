@@ -19,7 +19,7 @@ namespace:
     NAMESPACE COLON qualifiedName NEWLINE+;
 
 objectDefinition:
-    (objectParent GREATER_THAN)? qualifiedName (OPENING_BRACE objectId CLOSING_BRACE)? (COLON NEWLINE+ attributeDefinition+);
+    (objectParent GREATER_THAN)? qualifiedName (OPENING_BRACE objectId CLOSING_BRACE)? (NEWLINE+ | COLON NEWLINE+ attributeDefinition+)?;
 
 objectParent:
     (IDENTIFIER DOT)? IDENTIFIER;

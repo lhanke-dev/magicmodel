@@ -1,6 +1,7 @@
 Modelname: FullExampleModel
 Namespace: de.lhankedev.magicmodel.model
 
+Car(emptyCar)
 Car(testCar):
     - manufacturer: TestManufacturer
     - model: TestModel

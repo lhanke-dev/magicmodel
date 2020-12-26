@@ -39,8 +39,10 @@ public class PrimitiveFieldInstantiationPhase implements ModelCreationPhase {
     private void fillAttributeValues(final String attributeName, final List<String> attributeValues, Object objectInstance) {
         try {
             final Field field = objectInstance.getClass().getDeclaredField(attributeName);
-            final BiFunction<Class<?>, Optional<String>, Object> primitiveTypeConverterCallback = (elementClass, stringValueOpt) -> convertToTargetPrimitiveType(elementClass, stringValueOpt);
-            reflections.injectValueIntoField(objectInstance, field, attributeValues, primitiveTypeConverterCallback);
+            final BiFunction<Class<?>, Optional<Object>, Object> primitiveTypeConverterCallback = (elementClass, stringValueOpt) ->
+                    convertToTargetPrimitiveType(elementClass, stringValueOpt);
+            reflections.injectValueIntoField(objectInstance, field, attributeValues.stream().map(stringValue -> (Object) stringValue).collect(Collectors.toList()),
+                    primitiveTypeConverterCallback);
         } catch (NoSuchFieldException e) {
             throw new StreamSupportingModelCreationException(
                     format("Could not inject field value for field %s with value %s into object of type %s",
@@ -48,19 +50,20 @@ public class PrimitiveFieldInstantiationPhase implements ModelCreationPhase {
         }
     }
 
-    private Object convertToTargetPrimitiveType(Class<?> attributeType, Optional<String> valueOpt) {
+    private Object convertToTargetPrimitiveType(Class<?> attributeType, Optional<Object> valueOpt) {
+        Optional<String> stringValueOpt = valueOpt.map(Object::toString);
         if (attributeType == int.class || attributeType == Integer.class) {
-            return valueOpt.map(Integer::parseInt).orElse(null);
+            return stringValueOpt.map(Integer::parseInt).orElse(null);
         } else if (attributeType == long.class || attributeType == Long.class) {
-            return valueOpt.map(Long::parseLong).orElse(null);
+            return stringValueOpt.map(Long::parseLong).orElse(null);
         } else if (attributeType == double.class || attributeType == Double.class) {
-            return valueOpt.map(Double::parseDouble).orElse(null);
+            return stringValueOpt.map(Double::parseDouble).orElse(null);
         } else if (attributeType == float.class || attributeType == Float.class) {
-            return valueOpt.map(Float::parseFloat).orElse(null);
+            return stringValueOpt.map(Float::parseFloat).orElse(null);
         } else if (attributeType == boolean.class || attributeType == Boolean.class) {
-            return valueOpt.map(Boolean::parseBoolean).orElse(null);
+            return stringValueOpt.map(Boolean::parseBoolean).orElse(null);
         } else if (attributeType == String.class) {
-            return valueOpt.orElse("");
+            return stringValueOpt.orElse("");
         }
         throw new StreamSupportingModelCreationException(format(
                 "Unsupported terminal type %s found to be set to %s",

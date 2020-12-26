@@ -69,7 +69,7 @@ public class MagicModelReflections {
         }
     }
 
-    public void injectValueIntoField(Object objectInstance, Field field, List<String> values, BiFunction<Class<?>, Optional<String>, Object> convertTerminalValueToTargetType) {
+    public void injectValueIntoField(Object objectInstance, Field field, List<Object> values, BiFunction<Class<?>, Optional<Object>, Object> convertTerminalValueToTargetType) {
         final Object valueToSet = convertValueToTargetTypeIfNecessary(objectInstance.getClass(), field.getName(), field, values, convertTerminalValueToTargetType);
         final Optional<Method> setterMethod = ReflectionUtils.getMethods(objectInstance.getClass(), method -> this.isSetterOfField(method, field)).stream()
                 .findFirst();
@@ -80,8 +80,8 @@ public class MagicModelReflections {
                 );
     }
 
-    public Object convertValueToTargetTypeIfNecessary(Class<?> targetClass, String attributeName, Field targetField, List<String> attributeValues,
-                                                      BiFunction<Class<?>, Optional<String>, Object> convertTerminalValueToTargetType) {
+    public Object convertValueToTargetTypeIfNecessary(Class<?> targetClass, String attributeName, Field targetField, List<Object> attributeValues,
+                                                      BiFunction<Class<?>, Optional<Object>, Object> convertTerminalValueToTargetType) {
         if (!Collection.class.isAssignableFrom(targetField.getType()) && attributeValues.size() > 1) {
             throw new StreamSupportingModelCreationException(format(
                     "Could not set attribute collection value %s to field with name %s type %s in class %s",
@@ -163,5 +163,17 @@ public class MagicModelReflections {
 
     public InputStream openResource(String classPathLocation) {
         return RESOURCE_CLASS_LOADER.getResourceAsStream(classPathLocation);
+    }
+
+    public Optional<String> findAttributeNameWithType(Class<?> searchIn, Class<?> forFieldWithThisType) {
+        Set<Field> matchingFields = ReflectionUtils.getFields(searchIn, field ->
+                field.getType() == forFieldWithThisType ||
+                        getCollectionElementType(field.getGenericType()).filter(elementType -> elementType == forFieldWithThisType).isPresent());
+        if (matchingFields.size() > 1) {
+            throw new StreamSupportingModelCreationException(
+                    format("There is more than one field with type %s in class %s. Cannot resolve reference implicitly. Please use explicit identifiers.",
+                            forFieldWithThisType, searchIn));
+        }
+        return matchingFields.stream().map(Field::getName).findFirst();
     }
 }

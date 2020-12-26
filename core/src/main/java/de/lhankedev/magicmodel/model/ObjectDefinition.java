@@ -18,4 +18,17 @@ public class ObjectDefinition {
     Optional<String> parent;
     List<AttributeDefinition> attributes;
 
+    public Optional<String> getParentObjectId() {
+        return getParent()
+                .map(parentString -> parentString.contains(".") ?
+                        parentString.split("\\.")[0] :
+                        parentString);
+    }
+
+    public Optional<String> getParentAttributeName() {
+        return getParent()
+                .filter(parentString -> parentString.contains("."))
+                .map(parentString -> parentString.split("\\.")[1]);
+    }
+
 }

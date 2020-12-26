@@ -129,4 +129,33 @@ class ReflectiveMMFactoryTest {
                 .contains("Dino", "Saur", 21);
     }
 
+    @Test
+    void testQualifiedParentReference() throws MagicModelCreationException {
+        MagicModel magicModel = factory.createModel("QualifiedParentReference");
+        Optional<Car> car = magicModel.getObjectById("testCar", Car.class);
+
+        Assertions.assertThat(car)
+                .isPresent();
+
+        PersonAssertion.assertThat(car.get().getOwner())
+                .isNotNull()
+                .hasForeName("Dino")
+                .hasLastName("Saur")
+                .hasAge(21);
+    }
+
+    @Test
+    void testImplicitParentReference() throws MagicModelCreationException {
+        MagicModel magicModel = factory.createModel("ImplicitParentReference");
+        Optional<Car> car = magicModel.getObjectById("testCar", Car.class);
+
+        Assertions.assertThat(car)
+                .isPresent();
+
+        EngineAssertion.assertThat(car.get().getEngine())
+                .isNotNull()
+                .hasHorsePower(205)
+                .hasDisplacement(4009);
+    }
+
 }

@@ -8,8 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -22,8 +21,8 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
         String attributeName;
         Object owner;
 
-        ObjectReference addTargetObject(final Object targetObject) {
-            this.targetObjects.add(targetObject);
+        ObjectReference addTargetObjects(final Stream<Object> targetObjects) {
+            targetObjects.forEach(this.targetObjects::add);
             return this;
         }
 
@@ -47,12 +46,8 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
     private void injectObjectReference(ModelCreationContext context, ObjectReference objectReference) {
         try {
             final Field field = objectReference.getOwner().getClass().getDeclaredField(objectReference.getAttributeName());
-            final BiFunction<Class<?>, Optional<Object>, Object> convertTerminalValueToTargetType = (elementType, targetObjOpt) ->
-                    targetObjOpt.orElseThrow(
-                            () -> new StreamSupportingModelCreationException(
-                                    format("Could not resolve referenced object with id %s in magic model with name %s.",
-                                            context.getParsedModel().getName())));
-            reflections.injectValueIntoField(objectReference.getOwner(), field, objectReference.getTargetObjects(), convertTerminalValueToTargetType);
+            Object valueToSet = reflections.alignOrUnwrapCollectionType(field, objectReference.getTargetObjects());
+            reflections.injectValueIntoField(field, objectReference.getOwner(), valueToSet);
         } catch (NoSuchFieldException e) {
             throw new StreamSupportingModelCreationException(
                     format("Could not inject field value for field %s with value %s into object of type %s",
@@ -78,11 +73,10 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
 
     private ObjectReference createForwardObjectReference(AttributeDefinition attributeDefinition, MapBasedMagicModel magicModel, Object modelObject) {
         return new ObjectReference(attributeDefinition.getAttributeName(), modelObject)
-                .addTargetObject(attributeDefinition.getAttributeValues().stream().map(this::stripObjectReferencePrefix)
+                .addTargetObjects(attributeDefinition.getAttributeValues().stream().map(this::stripObjectReferencePrefix)
                         .map(targetId -> magicModel.getObjectById(targetId, Object.class))
                         .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList()));
+                        .map(Optional::get));
     }
 
     private void mergeParentReferenceIntoExistingReferences(List<ObjectReference> objectReferences, Optional<ObjectReference> parentReferenceOpt) {
@@ -107,7 +101,7 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
                         new StreamSupportingModelCreationException(format("Did not find attribute with type %s in referenced parent class %s please use explicit references via id.",
                                 modelObject.getClass(), owner.getClass()))),
                         owner))
-                .addTargetObject(modelObject);
+                .addTargetObjects(Stream.of(modelObject));
     }
 
 

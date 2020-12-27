@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -69,36 +68,53 @@ public class MagicModelReflections {
         }
     }
 
-    public void injectValueIntoField(Object objectInstance, Field field, List<Object> values, BiFunction<Class<?>, Optional<Object>, Object> convertTerminalValueToTargetType) {
-        final Object valueToSet = convertValueToTargetTypeIfNecessary(objectInstance.getClass(), field.getName(), field, values, convertTerminalValueToTargetType);
-        final Optional<Method> setterMethod = ReflectionUtils.getMethods(objectInstance.getClass(), method -> this.isSetterOfField(method, field)).stream()
+    public <T> T injectValueIntoField(Field field, T targetInstance, Object value) {
+        final Optional<Method> setterMethod = ReflectionUtils.getMethods(targetInstance.getClass(), method -> this.isSetterOfField(method, field)).stream()
                 .findFirst();
         setterMethod
                 .ifPresentOrElse(
-                        setterInstance -> this.injectValuesViaSetter(setterInstance, objectInstance, valueToSet),
-                        () -> this.injectValuesDirectly(field, objectInstance, valueToSet)
+                        setterInstance -> this.injectValuesViaSetter(setterInstance, targetInstance, value),
+                        () -> this.injectValuesDirectly(field, targetInstance, value)
                 );
+        return targetInstance;
     }
 
-    public Object convertValueToTargetTypeIfNecessary(Class<?> targetClass, String attributeName, Field targetField, List<Object> attributeValues,
-                                                      BiFunction<Class<?>, Optional<Object>, Object> convertTerminalValueToTargetType) {
-        if (!Collection.class.isAssignableFrom(targetField.getType()) && attributeValues.size() > 1) {
+    public Object alignOrUnwrapCollectionType(Field targetField, List<?> targetValues) {
+        if (!Collection.class.isAssignableFrom(targetField.getType()) && targetValues.size() > 1) {
             throw new StreamSupportingModelCreationException(format(
-                    "Could not set attribute collection value %s to field with name %s type %s in class %s",
-                    attributeValues, attributeName, targetField.getType().getCanonicalName(), targetClass.getCanonicalName()));
+                    "Could not set attribute collection value %s to field with name %s in class %s",
+                    targetValues, targetField.getName(), targetField.getDeclaringClass().getCanonicalName()));
         } else if (Collection.class.isAssignableFrom(targetField.getType())) {
-            List<Object> convertedElementValues = getCollectionElementType(targetField.getGenericType())
-                    .map(elementType -> attributeValues.stream()
-                            .map(Optional::of)
-                            .map(stringValueOpt -> convertTerminalValueToTargetType.apply(elementType, stringValueOpt))
-                            .collect(Collectors.toList()))
-                    .orElse(attributeValues.stream()
-                            .map(stringElem -> (Object) stringElem)
-                            .collect(Collectors.toList()));
-            return convertToTargetCollectionType(targetField, convertedElementValues);
+            return convertToTargetCollectionType(targetField, targetValues);
         } else {
-            return convertTerminalValueToTargetType.apply(targetField.getType(), attributeValues.stream().findFirst());
+            return targetValues.stream().findFirst().orElse(null);
         }
+    }
+
+    private Object convertToTargetCollectionType(Field field, List<?> attributeValues) {
+        if (Collection.class.isAssignableFrom(field.getType())) {
+            if (Set.class.isAssignableFrom(field.getType())) {
+                return new LinkedHashSet<>(attributeValues);
+            }
+            return new ArrayList<>(attributeValues);
+        }
+        throw new StreamSupportingModelCreationException(format(
+                "Unsupported terminal collection type %s found to be set to %s",
+                field.getType(), attributeValues));
+    }
+
+    public Optional<Class<?>> getCollectionElementType(final Type type) {
+        final Type[] typeArguments = type instanceof ParameterizedType ?
+                ((ParameterizedType) type).getActualTypeArguments() :
+                new Type[0];
+        if (typeArguments.length < 1) {
+            return Optional.empty();
+        } else if (typeArguments.length == 1) {
+            return clazzForName(typeArguments[0].getTypeName());
+        }
+        throw new StreamSupportingModelCreationException(format(
+                "Unsupported count of type parameters for collection type %s",
+                type));
     }
 
     private void injectValuesDirectly(final Field field, final Object objectInstance, final Object attributeValues) {
@@ -135,32 +151,6 @@ public class MagicModelReflections {
                 method.getParameterTypes()[0] == field.getType();
     }
 
-    private Object convertToTargetCollectionType(Field field, List<Object> attributeValues) {
-        if (Collection.class.isAssignableFrom(field.getType())) {
-            if (Set.class.isAssignableFrom(field.getType())) {
-                return new LinkedHashSet<>(attributeValues);
-            }
-            return new ArrayList<>(attributeValues);
-        }
-        throw new StreamSupportingModelCreationException(format(
-                "Unsupported terminal collection type %s found to be set to %s",
-                field.getType(), attributeValues));
-    }
-
-    private Optional<Class<?>> getCollectionElementType(final Type type) {
-        final Type[] typeArguments = type instanceof ParameterizedType ?
-                ((ParameterizedType) type).getActualTypeArguments() :
-                new Type[0];
-        if (typeArguments.length < 1) {
-            return Optional.empty();
-        } else if (typeArguments.length == 1) {
-            return clazzForName(typeArguments[0].getTypeName());
-        }
-        throw new StreamSupportingModelCreationException(format(
-                "Unsupported count of type parameters for collection type %s",
-                type));
-    }
-
     public InputStream openResource(String classPathLocation) {
         return RESOURCE_CLASS_LOADER.getResourceAsStream(classPathLocation);
     }
@@ -176,4 +166,5 @@ public class MagicModelReflections {
         }
         return matchingFields.stream().map(Field::getName).findFirst();
     }
+
 }

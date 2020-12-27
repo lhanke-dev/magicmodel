@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,8 +16,10 @@ public class Car {
     String manufacturer;
     String model;
 
-    Engine engine;
+    List<Integer> inspectionYears;
+    Set<Double> onlinePrices;
 
+    Engine engine;
     Person owner;
 
     List<Person> previousOwners;

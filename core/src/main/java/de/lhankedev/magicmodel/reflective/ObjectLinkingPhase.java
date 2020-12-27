@@ -6,7 +6,6 @@ import lombok.Value;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -19,9 +18,14 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
     @Value
     private class ObjectReference {
 
-        List<Object> targetObjects;
+        List<Object> targetObjects = new ArrayList<>();
         String attributeName;
         Object owner;
+
+        ObjectReference addTargetObject(final Object targetObject) {
+            this.targetObjects.add(targetObject);
+            return this;
+        }
 
     }
 
@@ -73,12 +77,12 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
     }
 
     private ObjectReference createForwardObjectReference(AttributeDefinition attributeDefinition, MapBasedMagicModel magicModel, Object modelObject) {
-        return new ObjectReference(attributeDefinition.getAttributeValues().stream().map(this::stripObjectReferencePrefix)
-                .map(targetId -> magicModel.getObjectById(targetId, Object.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList()),
-                attributeDefinition.getAttributeName(), modelObject);
+        return new ObjectReference(attributeDefinition.getAttributeName(), modelObject)
+                .addTargetObject(attributeDefinition.getAttributeValues().stream().map(this::stripObjectReferencePrefix)
+                        .map(targetId -> magicModel.getObjectById(targetId, Object.class))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList()));
     }
 
     private void mergeParentReferenceIntoExistingReferences(List<ObjectReference> objectReferences, Optional<ObjectReference> parentReferenceOpt) {
@@ -98,12 +102,12 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
                 () -> new StreamSupportingModelCreationException(format("Did not find parent object with id %s", parentObjectId))
         );
         return parentAttributeNameOpt
-                .map(parentAttributeName -> new ObjectReference(Collections.singletonList(modelObject), parentAttributeName, owner))
-                .orElseGet(() -> new ObjectReference(Collections.singletonList(modelObject),
-                        reflections.findAttributeNameWithType(owner.getClass(), modelObject.getClass()).orElseThrow(() ->
-                                new StreamSupportingModelCreationException(format("Did not find attribute with type %s in referenced parent class %s please use explicit references via id.",
-                                        modelObject.getClass(), owner.getClass()))),
-                        owner));
+                .map(parentAttributeName -> new ObjectReference(parentAttributeName, owner))
+                .orElseGet(() -> new ObjectReference(reflections.findAttributeNameWithType(owner.getClass(), modelObject.getClass()).orElseThrow(() ->
+                        new StreamSupportingModelCreationException(format("Did not find attribute with type %s in referenced parent class %s please use explicit references via id.",
+                                modelObject.getClass(), owner.getClass()))),
+                        owner))
+                .addTargetObject(modelObject);
     }
 
 

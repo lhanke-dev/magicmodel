@@ -158,4 +158,18 @@ class ReflectiveMMFactoryTest {
                 .hasDisplacement(4009);
     }
 
+    @Test
+    void testParentCollectionReference() throws MagicModelCreationException {
+        MagicModel magicModel = factory.createModel("ParentCollectionReference");
+        Optional<Car> car = magicModel.getObjectById("testCar", Car.class);
+
+        Assertions.assertThat(car)
+                .isPresent();
+
+        PersonsAssertion.assertThat(car.get().getPreviousOwners())
+                .contains("Ele", "Phant", 28)
+                .contains("Dino", "Saur", 21);
+    }
+
+
 }

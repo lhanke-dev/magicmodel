@@ -1,4 +1,4 @@
-Modelname: CarTestToNParentReference
+Modelname: ParentCollectionReference
 Namespace: de.lhankedev.magicmodel.model
 
 Car(testCar):

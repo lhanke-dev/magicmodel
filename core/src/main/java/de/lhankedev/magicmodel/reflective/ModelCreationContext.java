@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(makeFinal = true, level = PRIVATE)
 @RequiredArgsConstructor
 @ToString
-public class ModelCreationContext<T> {
+public class ModelCreationContext {
 
     MapBasedMagicModel mapBasedMagicModel = new MapBasedMagicModel();
     MagicModelDefinition parsedModel;

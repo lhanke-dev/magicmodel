@@ -8,4 +8,5 @@ const val mapStructVersion = "1.4.1.Final"
 // tests
 const val junitVersion = "5.7.0"
 const val assertjVersion = "3.6.1"
+const val mockitoVersion = "3.6.28"
 const val logbackVersion = "1.2.3"

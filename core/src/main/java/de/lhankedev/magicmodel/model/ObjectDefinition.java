@@ -14,8 +14,8 @@ import java.util.Optional;
 public class ObjectDefinition {
 
     String type;
-    Optional<String> id;
-    Optional<String> parent;
+    Optional<String> id = Optional.empty();
+    Optional<String> parent = Optional.empty();
     List<AttributeDefinition> attributes;
 
     public Optional<String> getParentObjectId() {

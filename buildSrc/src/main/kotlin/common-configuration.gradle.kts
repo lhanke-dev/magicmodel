@@ -7,7 +7,6 @@ repositories {
 }
 
 
-
 dependencies {
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")

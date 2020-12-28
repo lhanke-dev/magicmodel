@@ -1,7 +1,7 @@
 Modelname: TerminalFieldSingleValues
 Namespace: de.lhankedev.magicmodel.model
 
-TerminalTypeTest(testPrimitives):
+TerminalTestType(testPrimitives):
     - intValue: 12
     - longValue: 3
     - boolValue: true

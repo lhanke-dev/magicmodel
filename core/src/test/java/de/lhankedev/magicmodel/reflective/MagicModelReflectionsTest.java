@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class MagicModelReflectionsTest {
+class MagicModelReflectionsTest {
 
     @FieldDefaults(level = AccessLevel.PRIVATE)
     private static class WithUntypedListField {
@@ -35,9 +35,8 @@ public class MagicModelReflectionsTest {
     void testClazzForName() {
         Optional<Class<?>> reflectionsClazz = cut.clazzForName(MagicModelReflections.class.getCanonicalName());
         Assertions.assertThat(reflectionsClazz)
-                .isPresent();
-        Assertions.assertThat(reflectionsClazz.get())
-                .isSameAs(MagicModelReflections.class);
+                .isPresent()
+                .containsSame(MagicModelReflections.class);
     }
 
     @Test
@@ -96,18 +95,16 @@ public class MagicModelReflectionsTest {
     void testFindAttributeNameWithType() {
         Optional<String> attributeNameWithType = cut.findAttributeNameWithType(Car.class, Engine.class);
         Assertions.assertThat(attributeNameWithType)
-                .isPresent();
-        Assertions.assertThat(attributeNameWithType.get())
-                .isEqualTo("engine");
+                .isPresent()
+                .contains("engine");
     }
 
     @Test
     void testGetCollectionElementType() throws NoSuchFieldException {
         Optional<Class<?>> collectionElementType = cut.getCollectionElementType(Car.class.getDeclaredField("inspectionYears").getGenericType());
         Assertions.assertThat(collectionElementType)
-                .isPresent();
-        Assertions.assertThat(collectionElementType.get())
-                .isSameAs(Integer.class);
+                .isPresent()
+                .containsSame(Integer.class);
 
         Optional<Class<?>> untypedCollectionElementType = cut.getCollectionElementType(WithUntypedListField.class.getDeclaredField("untypedList").getGenericType());
         Assertions.assertThat(untypedCollectionElementType)

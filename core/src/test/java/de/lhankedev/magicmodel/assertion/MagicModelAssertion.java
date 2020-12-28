@@ -26,9 +26,8 @@ public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, Mag
     public MagicModelAssertion hasNamespace(final String namespace) {
         Optional<String> actualNamespace = actual.getNamespace();
         Assertions.assertThat(actualNamespace)
-                .isPresent();
-        Assertions.assertThat(actualNamespace.get())
-                .isEqualTo(namespace);
+                .isPresent()
+                .contains(namespace);
         return this;
     }
 

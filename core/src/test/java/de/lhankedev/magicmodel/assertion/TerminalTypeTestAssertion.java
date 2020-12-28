@@ -1,16 +1,16 @@
 package de.lhankedev.magicmodel.assertion;
 
-import de.lhankedev.magicmodel.model.TerminalTypeTest;
+import de.lhankedev.magicmodel.model.TerminalTestType;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
-public class TerminalTypeTestAssertion extends AbstractAssert<TerminalTypeTestAssertion, TerminalTypeTest> {
+public class TerminalTypeTestAssertion extends AbstractAssert<TerminalTypeTestAssertion, TerminalTestType> {
 
-    private TerminalTypeTestAssertion(final TerminalTypeTest actual) {
+    private TerminalTypeTestAssertion(final TerminalTestType actual) {
         super(actual, TerminalTypeTestAssertion.class);
     }
 
-    public static TerminalTypeTestAssertion assertThat(final TerminalTypeTest actual) {
+    public static TerminalTypeTestAssertion assertThat(final TerminalTestType actual) {
         return new TerminalTypeTestAssertion(actual);
     }
 

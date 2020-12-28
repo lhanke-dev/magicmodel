@@ -8,7 +8,7 @@ import de.lhankedev.magicmodel.MagicModelFactory;
 import de.lhankedev.magicmodel.assertion.*;
 import de.lhankedev.magicmodel.exception.MagicModelCreationException;
 import de.lhankedev.magicmodel.model.Car;
-import de.lhankedev.magicmodel.model.TerminalTypeTest;
+import de.lhankedev.magicmodel.model.TerminalTestType;
 import de.lhankedev.magicmodel.model.directaccess.MobilePhone;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class ReflectiveMMFactoryTest {
     @Test
     void testTerminalSingleValueFields() throws MagicModelCreationException {
         MagicModel magicModel = factory.createModel("TerminalFieldSingleValues");
-        Optional<TerminalTypeTest> testTypes = magicModel.getObjectById("testPrimitives", TerminalTypeTest.class);
+        Optional<TerminalTestType> testTypes = magicModel.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
                 .isPresent();
@@ -53,7 +53,7 @@ class ReflectiveMMFactoryTest {
     @Test
     void testTerminalCollectionValueFields() throws MagicModelCreationException {
         MagicModel magicModel = factory.createModel("TerminalFieldCollectionValues");
-        Optional<TerminalTypeTest> testTypes = magicModel.getObjectById("testPrimitives", TerminalTypeTest.class);
+        Optional<TerminalTestType> testTypes = magicModel.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
                 .isPresent();
@@ -70,7 +70,7 @@ class ReflectiveMMFactoryTest {
     @Test
     void testTerminalListValueFields() throws MagicModelCreationException {
         MagicModel magicModel = factory.createModel("TerminalFieldListValues");
-        Optional<TerminalTypeTest> testTypes = magicModel.getObjectById("testPrimitives", TerminalTypeTest.class);
+        Optional<TerminalTestType> testTypes = magicModel.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
                 .isPresent();
@@ -87,7 +87,7 @@ class ReflectiveMMFactoryTest {
     @Test
     void testTerminalSetValueFields() throws MagicModelCreationException {
         MagicModel magicModel = factory.createModel("TerminalFieldSetValues");
-        Optional<TerminalTypeTest> testTypes = magicModel.getObjectById("testPrimitives", TerminalTypeTest.class);
+        Optional<TerminalTestType> testTypes = magicModel.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
                 .isPresent();

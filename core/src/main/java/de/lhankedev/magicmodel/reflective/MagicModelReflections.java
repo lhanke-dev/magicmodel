@@ -56,13 +56,14 @@ public class MagicModelReflections {
     }
 
     public <T> T createObject(final Class<T> clazz) {
-        Set<Constructor> constructors = ReflectionUtils.getConstructors(clazz, constructor -> constructor.getParameterCount() == 0);
-        if (constructors.isEmpty()) {
-            throw new StreamSupportingModelCreationException(format("Failed to instantiate defined object of type %s since no default (no args) constructor could be found.", clazz.getCanonicalName()));
-        }
-        Constructor constructor = constructors.stream().findFirst().get();
+        Constructor<T> noArgsConstructor = ReflectionUtils.getConstructors(clazz, constructor -> constructor.getParameterCount() == 0)
+                .stream()
+                .map(constructor -> (Constructor<T>) constructor)
+                .findFirst()
+                .orElseThrow(() ->
+                        new StreamSupportingModelCreationException(format("Failed to instantiate defined object of type %s since no default (no args) constructor could be found.", clazz.getCanonicalName())));
         try {
-            return (T) constructor.newInstance();
+            return noArgsConstructor.newInstance();
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new StreamSupportingModelCreationException(format("Failed to instantiate defined object of type %s since the default constructor could not be invoked successfully.", clazz.getCanonicalName()), e);
         }
@@ -119,13 +120,13 @@ public class MagicModelReflections {
 
     private void injectValuesDirectly(final Field field, final Object objectInstance, final Object attributeValues) {
         try {
-            field.set(objectInstance, attributeValues);
+            field.set(objectInstance, attributeValues); //NOSONAR
         } catch (IllegalAccessException e) {
             LOG.debug("Failed to set value {} for field {} directly for object of type {}. Trying to make the field accessible.",
                     attributeValues, field.getName(), objectInstance.getClass().getCanonicalName());
             if (field.trySetAccessible()) {
                 try {
-                    field.set(objectInstance, attributeValues);
+                    field.set(objectInstance, attributeValues); //NOSONAR
                 } catch (IllegalAccessException illegalAccessException) {
                     throw new StreamSupportingModelCreationException(format("Failed to set value %s for field %s directly for object of type %s since the field could not be accessed. Please disable security manager or provide a setter for the field."
                             , attributeValues, field.getName(), objectInstance.getClass().getCanonicalName()), e);

@@ -1,7 +1,7 @@
 Modelname: TerminalFieldCollectionValues
 Namespace: de.lhankedev.magicmodel.model
 
-TerminalTypeTest(testPrimitives):
+TerminalTestType(testPrimitives):
     - intCollection:
         - 1
         - 2

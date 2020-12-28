@@ -37,13 +37,13 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
     @Override
     public ModelCreationContext perform(ModelCreationContext context) {
         List<ObjectReference> objectReferences = new ArrayList<>();
-        context.getParsedModel().getObjects().stream()
+        context.getParsedModel().getObjects()
                 .forEach(parsedObject -> this.addObjectReferences(parsedObject, objectReferences, context.getMapBasedMagicModel()));
-        objectReferences.forEach(objectReference -> injectObjectReference(context, objectReference));
+        objectReferences.forEach(this::injectObjectReference);
         return context;
     }
 
-    private void injectObjectReference(ModelCreationContext context, ObjectReference objectReference) {
+    private void injectObjectReference(ObjectReference objectReference) {
         try {
             final Field field = objectReference.getOwner().getClass().getDeclaredField(objectReference.getAttributeName());
             Object valueToSet = reflections.alignOrUnwrapCollectionType(field, objectReference.getTargetObjects());
@@ -64,11 +64,18 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
         objectDefinition.getAttributes().stream()
                 .filter(this::containsObjectReferences)
                 .map(attributeDefinition -> createForwardObjectReference(attributeDefinition, magicModel, modelObject))
-                .forEach(forwardReference -> objectReferences.add(forwardReference));
+                .forEach(objectReferences::add);
 
-        Optional<ObjectReference> parentReferenceOpt = objectDefinition.getParentObjectId()
-                .map(parentObjectId -> this.createReferenceByParentId(parentObjectId, objectDefinition.getParentAttributeName(), modelObject, magicModel));
-        mergeParentReferenceIntoExistingReferences(objectReferences, parentReferenceOpt);
+        objectDefinition.getParentObjectId()
+                .map(parentObjectId -> magicModel.getObjectById(parentObjectId, Object.class)
+                        .orElseThrow(()
+                                -> new StreamSupportingModelCreationException(format("Did not find parent object with id %s", parentObjectId))
+                        ))
+                .map(parentObject ->
+                        objectDefinition.getParentAttributeName()
+                                .map(parentAttributeName -> this.createReferenceByParentId(parentObject, parentAttributeName, modelObject, magicModel))
+                                .orElseGet(() -> this.createReferenceByParentId(parentObject, modelObject, magicModel)))
+                .ifPresent(parentReference -> mergeParentReferenceIntoExistingReferences(objectReferences, parentReference));
     }
 
     private ObjectReference createForwardObjectReference(AttributeDefinition attributeDefinition, MapBasedMagicModel magicModel, Object modelObject) {
@@ -79,28 +86,26 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
                         .map(Optional::get));
     }
 
-    private void mergeParentReferenceIntoExistingReferences(List<ObjectReference> objectReferences, Optional<ObjectReference> parentReferenceOpt) {
-        parentReferenceOpt.ifPresent(
-                parentReference -> objectReferences.stream()
-                        .filter(objectReference -> parentReference.getOwner() == objectReference.getOwner() && parentReference.getAttributeName().equals(objectReference.getAttributeName()))
-                        .findFirst()
-                        .ifPresentOrElse(
-                                objectReference -> objectReference.getTargetObjects().addAll(parentReference.getTargetObjects()),
-                                () -> objectReferences.add(parentReference)
-                        )
-        );
+    private void mergeParentReferenceIntoExistingReferences(List<ObjectReference> objectReferences, ObjectReference parentReference) {
+        objectReferences.stream()
+                .filter(objectReference -> parentReference.getOwner() == objectReference.getOwner() && parentReference.getAttributeName().equals(objectReference.getAttributeName()))
+                .findFirst()
+                .ifPresentOrElse(
+                        objectReference -> objectReference.getTargetObjects().addAll(parentReference.getTargetObjects()),
+                        () -> objectReferences.add(parentReference)
+                );
     }
 
-    private ObjectReference createReferenceByParentId(String parentObjectId, Optional<String> parentAttributeNameOpt, Object modelObject, MapBasedMagicModel magicModel) {
-        final Object owner = magicModel.getObjectById(parentObjectId, Object.class).orElseThrow(
-                () -> new StreamSupportingModelCreationException(format("Did not find parent object with id %s", parentObjectId))
-        );
-        return parentAttributeNameOpt
-                .map(parentAttributeName -> new ObjectReference(parentAttributeName, owner))
-                .orElseGet(() -> new ObjectReference(reflections.findAttributeNameWithType(owner.getClass(), modelObject.getClass()).orElseThrow(() ->
+    private ObjectReference createReferenceByParentId(Object owner, String parentAttributeName, Object modelObject, MapBasedMagicModel magicModel) {
+        return new ObjectReference(parentAttributeName, owner)
+                .addTargetObjects(Stream.of(modelObject));
+    }
+
+    private ObjectReference createReferenceByParentId(Object owner, Object modelObject, MapBasedMagicModel magicModel) {
+        return new ObjectReference(reflections.findAttributeNameWithType(owner.getClass(), modelObject.getClass())
+                .orElseThrow(() ->
                         new StreamSupportingModelCreationException(format("Did not find attribute with type %s in referenced parent class %s please use explicit references via id.",
-                                modelObject.getClass(), owner.getClass()))),
-                        owner))
+                                modelObject.getClass(), owner.getClass()))), owner)
                 .addTargetObjects(Stream.of(modelObject));
     }
 

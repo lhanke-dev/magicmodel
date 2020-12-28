@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ObjectCreationPhaseTest {
+class ObjectCreationPhaseTest {
 
     private final ObjectCreationPhase cut = new ObjectCreationPhase();
 
@@ -37,7 +37,7 @@ public class ObjectCreationPhaseTest {
         Assertions.assertThat(createdObjects)
                 .hasSize(2);
         List<Class<?>> createdInstanceTypes = createdObjects.stream()
-                .map(object -> object.getCreatedObject())
+                .map(CreatedMagicModelObject::getCreatedObject)
                 .map(Object::getClass)
                 .collect(Collectors.toList());
         Assertions.assertThat(createdInstanceTypes)

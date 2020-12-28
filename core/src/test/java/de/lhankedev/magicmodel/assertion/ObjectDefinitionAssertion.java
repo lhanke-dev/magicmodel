@@ -20,18 +20,16 @@ public class ObjectDefinitionAssertion extends AbstractAssert<ObjectDefinitionAs
     public ObjectDefinitionAssertion hasId(final String id) {
         Optional<String> actualId = actual.getId();
         Assertions.assertThat(actualId)
-                .isPresent();
-        Assertions.assertThat(actualId.get())
-                .isEqualTo(id);
+                .isPresent()
+                .contains(id);
         return this;
     }
 
     public ObjectDefinitionAssertion hasParent(final String parent) {
         Optional<String> actualParent = actual.getParent();
         Assertions.assertThat(actualParent)
-                .isPresent();
-        Assertions.assertThat(actualParent.get())
-                .isEqualTo(parent);
+                .isPresent()
+                .contains(parent);
         return this;
     }
 

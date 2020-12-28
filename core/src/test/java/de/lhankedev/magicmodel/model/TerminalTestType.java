@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class TerminalTypeTest {
+public class TerminalTestType {
 
     int intValue;
     long longValue;

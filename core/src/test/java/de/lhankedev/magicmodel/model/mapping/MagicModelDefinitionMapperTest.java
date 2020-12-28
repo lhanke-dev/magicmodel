@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class MagicModelDefinitionMapperTest {
+class MagicModelDefinitionMapperTest {
 
     public static final String FULL_EXAMPLE_MODEL_CLASSPATH = "/de/lhankedev/magicmodel/model/mapping/FullExampleModel.mm";
 

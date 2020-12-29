@@ -1,5 +1,6 @@
 plugins {
     java
+    checkstyle
 }
 
 repositories {
@@ -33,4 +34,9 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+checkstyle {
+    toolVersion = checkstyleVersion
+    configFile = file("${rootProject.projectDir.absolutePath}/config/checkstyle/checkstyle.xml")
 }

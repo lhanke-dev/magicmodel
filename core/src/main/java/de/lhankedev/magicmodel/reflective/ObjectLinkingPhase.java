@@ -82,8 +82,8 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
                 .map(parentObject ->
                         objectDefinition.getParentAttributeName()
                                 .map(parentAttributeName -> this.createReferenceByParentId(parentObject,
-                                        parentAttributeName, modelObject, magicModel))
-                                .orElseGet(() -> this.createReferenceByParentId(parentObject, modelObject, magicModel)))
+                                        parentAttributeName, modelObject))
+                                .orElseGet(() -> this.createReferenceByParentId(parentObject, modelObject)))
                 .ifPresent(parentReference -> mergeParentReferenceIntoExistingReferences(objectReferences,
                         parentReference));
     }
@@ -112,14 +112,12 @@ public class ObjectLinkingPhase implements ModelCreationPhase {
     }
 
     private ObjectReference createReferenceByParentId(final Object owner, final String parentAttributeName,
-                                                      final Object modelObject,
-                                                      final MapBasedMagicModel magicModel) {
+                                                      final Object modelObject) {
         return new ObjectReference(parentAttributeName, owner)
                 .addTargetObjects(Stream.of(modelObject));
     }
 
-    private ObjectReference createReferenceByParentId(final Object owner, final Object modelObject,
-                                                      final MapBasedMagicModel magicModel) {
+    private ObjectReference createReferenceByParentId(final Object owner, final Object modelObject) {
         return new ObjectReference(reflections.findAttributeNameWithType(owner.getClass(), modelObject.getClass())
                 .orElseThrow(() ->
                         new StreamSupportingModelCreationException(

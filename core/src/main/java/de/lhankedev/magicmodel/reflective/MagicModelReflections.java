@@ -69,10 +69,9 @@ public class MagicModelReflections {
 
     @SuppressWarnings("unchecked")
     public <T> T createObject(final Class<T> clazz) {
-        final Constructor<T> noArgsConstructor = ReflectionUtils.getConstructors(clazz,
+        final Constructor<T> noArgsConstructor = (Constructor<T>) ReflectionUtils.getConstructors(clazz,
                 constructor -> constructor.getParameterCount() == 0)
                 .stream()
-                .map(constructor -> (Constructor<T>) constructor)
                 .findFirst()
                 .orElseThrow(() ->
                         new StreamSupportingModelCreationException(

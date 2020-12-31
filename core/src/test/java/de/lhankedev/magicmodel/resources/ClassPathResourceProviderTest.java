@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClassPathResourceProviderTest {
+class ClassPathResourceProviderTest {
 
     public static final String EXPECTED_CLASSPATH_RESOURCE_CONTENT = "Found it!";
     private final ClassPathResourceProvider cut = new ClassPathResourceProvider("testClassPath.*\\.txt");

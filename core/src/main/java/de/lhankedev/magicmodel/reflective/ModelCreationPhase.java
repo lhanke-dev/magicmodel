@@ -1,6 +1,6 @@
 package de.lhankedev.magicmodel.reflective;
 
-public interface ModelCreationPhase {
+interface ModelCreationPhase {
 
     ModelCreationContext perform(ModelCreationContext context);
 

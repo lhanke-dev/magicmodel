@@ -60,3 +60,10 @@ tasks {
         dependsOn("generateGrammarSource")
     }
 }
+
+checkstyle {
+    toolVersion = checkstyleVersion
+    configFile = file("${rootProject.projectDir.absolutePath}/config/checkstyle/checkstyle.xml")
+    // exclude antlr generated sources
+    sourceSets = listOf(project.sourceSets.getByName("main"), project.sourceSets.getByName("test"))
+}

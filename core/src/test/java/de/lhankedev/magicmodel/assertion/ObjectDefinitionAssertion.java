@@ -2,10 +2,11 @@ package de.lhankedev.magicmodel.assertion;
 
 import de.lhankedev.magicmodel.model.AttributeDefinition;
 import de.lhankedev.magicmodel.model.ObjectDefinition;
-import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
 
 import java.util.Optional;
+
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class ObjectDefinitionAssertion extends AbstractAssert<ObjectDefinitionAssertion, ObjectDefinition> {
 
@@ -18,7 +19,7 @@ public class ObjectDefinitionAssertion extends AbstractAssert<ObjectDefinitionAs
     }
 
     public ObjectDefinitionAssertion hasId(final String id) {
-        Optional<String> actualId = actual.getId();
+        final Optional<String> actualId = actual.getId();
         Assertions.assertThat(actualId)
                 .isPresent()
                 .contains(id);
@@ -26,7 +27,7 @@ public class ObjectDefinitionAssertion extends AbstractAssert<ObjectDefinitionAs
     }
 
     public ObjectDefinitionAssertion hasParent(final String parent) {
-        Optional<String> actualParent = actual.getParent();
+        final Optional<String> actualParent = actual.getParent();
         Assertions.assertThat(actualParent)
                 .isPresent()
                 .contains(parent);
@@ -57,7 +58,7 @@ public class ObjectDefinitionAssertion extends AbstractAssert<ObjectDefinitionAs
     }
 
     public AttributeDefinitionAssertion getAttributeByName(final String name) {
-        Optional<AttributeDefinition> targetAttribute = actual.getAttributes().stream()
+        final Optional<AttributeDefinition> targetAttribute = actual.getAttributes().stream()
                 .filter(attribute -> name.equals(attribute.getAttributeName()))
                 .findFirst();
         Assertions.assertThat(targetAttribute)

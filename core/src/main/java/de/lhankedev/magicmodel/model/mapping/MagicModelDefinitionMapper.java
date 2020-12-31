@@ -2,16 +2,17 @@ package de.lhankedev.magicmodel.model.mapping;
 
 import de.lhankedev.magicmodel.antlr.MagicmodelParser;
 import de.lhankedev.magicmodel.model.MagicModelDefinition;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
 @Mapper(uses = {
         ObjectDefinitionMapper.class
-}, imports = {
+    }, imports = {
         ObjectDefinitionMapper.class,
         MagicmodelParser.NamespaceContext.class,
         MagicmodelParser.QualifiedNameContext.class,

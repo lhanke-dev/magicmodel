@@ -2,6 +2,7 @@ package de.lhankedev.magicmodel.reflective;
 
 import de.lhankedev.magicmodel.MagicModel;
 import de.lhankedev.magicmodel.model.MagicModelDefinition;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

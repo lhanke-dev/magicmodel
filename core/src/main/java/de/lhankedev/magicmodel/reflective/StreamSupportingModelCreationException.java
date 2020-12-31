@@ -2,11 +2,11 @@ package de.lhankedev.magicmodel.reflective;
 
 public class StreamSupportingModelCreationException extends RuntimeException {
 
-    public StreamSupportingModelCreationException(String message) {
+    public StreamSupportingModelCreationException(final String message) {
         super(message);
     }
 
-    public StreamSupportingModelCreationException(String message, Throwable cause) {
+    public StreamSupportingModelCreationException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

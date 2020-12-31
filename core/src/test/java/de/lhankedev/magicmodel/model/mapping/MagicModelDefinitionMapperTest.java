@@ -5,25 +5,28 @@ import de.lhankedev.magicmodel.antlr.MagicmodelParser;
 import de.lhankedev.magicmodel.assertion.MagicModelAssertion;
 import de.lhankedev.magicmodel.assertion.ObjectDefinitionAssertion;
 import de.lhankedev.magicmodel.model.MagicModelDefinition;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
+
 class MagicModelDefinitionMapperTest {
 
-    public static final String FULL_EXAMPLE_MODEL_CLASSPATH = "/de/lhankedev/magicmodel/model/mapping/FullExampleModel.mm";
+    public static final String FULL_EXAMPLE_MODEL_CLASSPATH =
+            "/de/lhankedev/magicmodel/model/mapping/FullExampleModel.mm";
 
     private final MagicModelDefinitionMapper cut = MagicModelDefinitionMapper.INSTANCE;
 
     @Test
     void testMagicModelMapper() throws IOException {
 
-        try (InputStream fullExampleModelStream = MagicModelDefinitionMapperTest.class.getResourceAsStream(FULL_EXAMPLE_MODEL_CLASSPATH)) {
+        try (InputStream fullExampleModelStream = MagicModelDefinitionMapperTest.class
+                .getResourceAsStream(FULL_EXAMPLE_MODEL_CLASSPATH)) {
             final String fullExampleModelFileContent = IOUtils.toString(fullExampleModelStream, StandardCharsets.UTF_8);
             final MagicmodelLexer lexer = new MagicmodelLexer(CharStreams.fromString(fullExampleModelFileContent));
             final CommonTokenStream tokenStream = new CommonTokenStream(lexer);

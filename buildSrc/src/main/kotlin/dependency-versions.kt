@@ -1,5 +1,6 @@
 // build
 const val sonarQubeVersion = "3.0"
+const val checkstyleVersion = "8.38"
 // implementation
 const val antlrVersion = "4.9"
 const val lombokVersion = "1.18.16"

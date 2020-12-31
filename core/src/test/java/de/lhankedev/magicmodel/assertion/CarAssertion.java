@@ -1,6 +1,7 @@
 package de.lhankedev.magicmodel.assertion;
 
 import de.lhankedev.magicmodel.model.Car;
+
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 

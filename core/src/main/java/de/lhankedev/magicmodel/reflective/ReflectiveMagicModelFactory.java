@@ -11,10 +11,6 @@ import de.lhankedev.magicmodel.model.mapping.MagicModelDefinitionMapper;
 import de.lhankedev.magicmodel.resources.ClassPathResourceProvider;
 import de.lhankedev.magicmodel.resources.MagicModelResourceProvider;
 import de.lhankedev.magicmodel.resources.Resource;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,18 +20,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.lang.String.format;
 
-public class ReflectiveMMFactory implements MagicModelFactory {
+public class ReflectiveMagicModelFactory implements MagicModelFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReflectiveMMFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReflectiveMagicModelFactory.class);
 
     private final MagicModelResourceProvider resourceProvider;
     private final MagicModelDefinitionMapper mapper;
 
     private final List<ModelCreationPhase> phases;
 
-    public ReflectiveMMFactory() {
+    public ReflectiveMagicModelFactory() {
         this.resourceProvider = new ClassPathResourceProvider(".*\\.mm");
         this.mapper = MagicModelDefinitionMapper.INSTANCE;
         this.phases = setupPhases();
@@ -50,26 +51,26 @@ public class ReflectiveMMFactory implements MagicModelFactory {
     }
 
     @Override
-    public MagicModel createModel(String modelName) throws MagicModelCreationException {
+    public MagicModel createModel(final String modelName) throws MagicModelCreationException {
 
-        Collection<MagicModelDefinition> magicModelDefinitionDefinitions = getMagicModelDefinitions();
-        List<MagicModelDefinition> modelDefinitions = magicModelDefinitionDefinitions.stream()
+        final Collection<MagicModelDefinition> magicModelDefinitionDefinitions = getMagicModelDefinitions();
+        final List<MagicModelDefinition> modelDefinitions = magicModelDefinitionDefinitions.stream()
                 .filter(magicModel -> magicModel.getName().equals(modelName))
                 .collect(Collectors.toList());
 
         if (modelDefinitions.isEmpty()) {
             throw new MagicModelCreationException(format("Could not find model definition with name %s", modelName));
         } else if (modelDefinitions.size() > 1) {
-            throw new MagicModelCreationException(format("Found ambiguous model definitions with name %s on the classpath. Please make model names unique.", modelName));
+            throw new MagicModelCreationException(format("Found ambiguous model definitions with name %s on the " +
+                    "classpath. Please make model names unique.", modelName));
         }
 
         final MagicModelDefinition magicModelDefinition = modelDefinitions.get(0);
         final ModelCreationContext context = new ModelCreationContext(magicModelDefinition);
 
         try {
-            phases.stream()
-                    .forEach(phase -> phase.perform(context));
-        } catch (StreamSupportingModelCreationException e) {
+            phases.forEach(phase -> phase.perform(context));
+        } catch (final StreamSupportingModelCreationException e) {
             throw new MagicModelCreationException(format("Failed to create model with name %s", modelName), e);
         }
 
@@ -84,14 +85,14 @@ public class ReflectiveMMFactory implements MagicModelFactory {
                 .collect(Collectors.toList());
     }
 
-    private ModeldefinitionContext parseMagicModel(Resource resource) {
+    private ModeldefinitionContext parseMagicModel(final Resource resource) {
         LOG.debug("Parsing resource: {}", resource);
-        try (InputStream inStream = resource.open()) {
+        try (final InputStream inStream = resource.open()) {
             final MagicmodelLexer lexer = new MagicmodelLexer(CharStreams.fromStream(inStream, StandardCharsets.UTF_8));
             final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             final MagicmodelParser parser = new MagicmodelParser(tokenStream);
             return parser.modeldefinition();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Could not load magicmodel from resource " + resource, e);
         }
         return null;

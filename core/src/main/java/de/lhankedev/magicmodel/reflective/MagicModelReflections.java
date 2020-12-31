@@ -1,5 +1,24 @@
 package de.lhankedev.magicmodel.reflective;
 
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -7,13 +26,6 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.InputStream;
-import java.lang.reflect.*;
-import java.net.URL;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -34,13 +46,13 @@ public class MagicModelReflections {
         final ResourcesScanner scanner = new ResourcesScanner();
 
         // this seems to be necessary due to https://github.com/ronmamo/reflections/issues/273 which prevents adding the classloader directly
-        List<URL> packageURLs = Arrays.stream(RESOURCE_CLASS_LOADER.getDefinedPackages())
+        final List<URL> packageUrls = Arrays.stream(RESOURCE_CLASS_LOADER.getDefinedPackages())
                 .map(Package::getName)
                 .flatMap(packageName -> ClasspathHelper.forPackage(packageName).stream())
                 .collect(Collectors.toList());
 
         final ConfigurationBuilder configBuilder = new ConfigurationBuilder()
-                .addUrls(packageURLs)
+                .addUrls(packageUrls)
                 .addClassLoader(ClasspathHelper.contextClassLoader())
                 .addScanners(scanner);
 
@@ -55,32 +67,40 @@ public class MagicModelReflections {
         return Optional.ofNullable(ReflectionUtils.forName(fullyQualifiedName, ClasspathHelper.contextClassLoader()));
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T createObject(final Class<T> clazz) {
-        Constructor<T> noArgsConstructor = ReflectionUtils.getConstructors(clazz, constructor -> constructor.getParameterCount() == 0)
+        final Constructor<T> noArgsConstructor = ReflectionUtils.getConstructors(clazz,
+                constructor -> constructor.getParameterCount() == 0)
                 .stream()
                 .map(constructor -> (Constructor<T>) constructor)
                 .findFirst()
                 .orElseThrow(() ->
-                        new StreamSupportingModelCreationException(format("Failed to instantiate defined object of type %s since no default (no args) constructor could be found.", clazz.getCanonicalName())));
+                        new StreamSupportingModelCreationException(
+                                format("Failed to instantiate defined object of type %s since " +
+                                                "no default (no args) constructor could be found.",
+                                        clazz.getCanonicalName())));
         try {
             return noArgsConstructor.newInstance();
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new StreamSupportingModelCreationException(format("Failed to instantiate defined object of type %s since the default constructor could not be invoked successfully.", clazz.getCanonicalName()), e);
+        } catch (final IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new StreamSupportingModelCreationException(
+                    format("Failed to instantiate defined object of type %s since " +
+                                    "the default constructor could not be invoked successfully.",
+                            clazz.getCanonicalName()), e);
         }
     }
 
-    public <T> T injectValueIntoField(Field field, T targetInstance, Object value) {
-        final Optional<Method> setterMethod = ReflectionUtils.getMethods(targetInstance.getClass(), method -> this.isSetterOfField(method, field)).stream()
+    @SuppressWarnings("unchecked")
+    public <T> T injectValueIntoField(final Field field, final T targetInstance, final Object value) {
+        final Optional<Method> setterMethod = ReflectionUtils.getMethods(targetInstance.getClass(),
+                method -> this.isSetterOfField(method, field)).stream()
                 .findFirst();
-        setterMethod
-                .ifPresentOrElse(
-                        setterInstance -> this.injectValuesViaSetter(setterInstance, targetInstance, value),
-                        () -> this.injectValuesDirectly(field, targetInstance, value)
-                );
+        setterMethod.ifPresentOrElse(
+                setterInstance -> this.injectValuesViaSetter(setterInstance, targetInstance, value),
+                () -> this.injectValuesDirectly(field, targetInstance, value));
         return targetInstance;
     }
 
-    public Object alignOrUnwrapCollectionType(Field targetField, List<?> targetValues) {
+    public Object alignOrUnwrapCollectionType(final Field targetField, final List<?> targetValues) {
         if (!Collection.class.isAssignableFrom(targetField.getType()) && targetValues.size() > 1) {
             throw new StreamSupportingModelCreationException(format(
                     "Could not set attribute collection value %s to field with name %s in class %s",
@@ -92,7 +112,7 @@ public class MagicModelReflections {
         }
     }
 
-    private Object convertToTargetCollectionType(Field field, List<?> attributeValues) {
+    private Object convertToTargetCollectionType(final Field field, final List<?> attributeValues) {
         if (Collection.class.isAssignableFrom(field.getType())) {
             if (Set.class.isAssignableFrom(field.getType())) {
                 return new LinkedHashSet<>(attributeValues);
@@ -121,26 +141,38 @@ public class MagicModelReflections {
     private void injectValuesDirectly(final Field field, final Object objectInstance, final Object attributeValues) {
         try {
             field.set(objectInstance, attributeValues); //NOSONAR
-        } catch (IllegalAccessException e) {
-            LOG.debug("Failed to set value {} for field {} directly for object of type {}. Trying to make the field accessible.",
-                    attributeValues, field.getName(), objectInstance.getClass().getCanonicalName());
+        } catch (final IllegalAccessException e) {
+            LOG.debug(
+                    "Failed to set value {} for field {} directly for object of type {}. " +
+                            "Trying to make the field accessible.",
+                    attributeValues,
+                    field.getName(),
+                    objectInstance.getClass().getCanonicalName());
             if (field.trySetAccessible()) {
                 try {
                     field.set(objectInstance, attributeValues); //NOSONAR
-                } catch (IllegalAccessException illegalAccessException) {
-                    throw new StreamSupportingModelCreationException(format("Failed to set value %s for field %s directly for object of type %s since the field could not be accessed. Please disable security manager or provide a setter for the field."
-                            , attributeValues, field.getName(), objectInstance.getClass().getCanonicalName()), e);
+                } catch (final IllegalAccessException illegalAccessException) {
+                    throw new StreamSupportingModelCreationException(
+                            format("Failed to set value %s for field %s directly for object of type %s since " +
+                                            "the field could not be accessed. " +
+                                            "Please disable security manager or provide a setter for the field.",
+                                    attributeValues, field.getName(), objectInstance.getClass().getCanonicalName()),
+                            e);
                 }
             }
         }
     }
 
-    private void injectValuesViaSetter(final Method setterInstance, final Object objectInstance, final Object attributeValues) {
+    private void injectValuesViaSetter(final Method setterInstance, final Object objectInstance,
+                                       final Object attributeValues) {
         try {
             setterInstance.invoke(objectInstance, attributeValues);
-        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-            throw new StreamSupportingModelCreationException(format("Could not set value %s via setter %s for instance of type %s.",
-                    attributeValues, setterInstance, objectInstance.getClass().getCanonicalName()), e);
+        } catch (final IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
+            throw new StreamSupportingModelCreationException(format(
+                    "Could not set value %s via setter %s for instance of type %s.",
+                    attributeValues,
+                    setterInstance,
+                    objectInstance.getClass().getCanonicalName()), e);
         }
     }
 
@@ -152,17 +184,21 @@ public class MagicModelReflections {
                 method.getParameterTypes()[0] == field.getType();
     }
 
-    public InputStream openResource(String classPathLocation) {
+    public InputStream openResource(final String classPathLocation) {
         return RESOURCE_CLASS_LOADER.getResourceAsStream(classPathLocation);
     }
 
-    public Optional<String> findAttributeNameWithType(Class<?> searchIn, Class<?> forFieldWithThisType) {
-        Set<Field> matchingFields = ReflectionUtils.getFields(searchIn, field ->
+    @SuppressWarnings("unchecked")
+    public Optional<String> findAttributeNameWithType(final Class<?> searchIn, final Class<?> forFieldWithThisType) {
+        final Set<Field> matchingFields = ReflectionUtils.getFields(searchIn, field ->
                 field.getType() == forFieldWithThisType ||
-                        getCollectionElementType(field.getGenericType()).filter(elementType -> elementType == forFieldWithThisType).isPresent());
+                        getCollectionElementType(field.getGenericType()).filter(
+                                elementType -> elementType == forFieldWithThisType).isPresent());
         if (matchingFields.size() > 1) {
             throw new StreamSupportingModelCreationException(
-                    format("There is more than one field with type %s in class %s. Cannot resolve reference implicitly. Please use explicit identifiers.",
+                    format("There is more than one field with type %s in class %s. " +
+                                    "Cannot resolve reference implicitly. " +
+                                    "Please use explicit identifiers.",
                             forFieldWithThisType, searchIn));
         }
         return matchingFields.stream().map(Field::getName).findFirst();

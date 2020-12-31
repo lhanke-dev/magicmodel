@@ -2,10 +2,11 @@ package de.lhankedev.magicmodel.assertion;
 
 import de.lhankedev.magicmodel.model.MagicModelDefinition;
 import de.lhankedev.magicmodel.model.ObjectDefinition;
-import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
 
 import java.util.Optional;
+
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, MagicModelDefinition> {
 
@@ -24,7 +25,7 @@ public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, Mag
     }
 
     public MagicModelAssertion hasNamespace(final String namespace) {
-        Optional<String> actualNamespace = actual.getNamespace();
+        final Optional<String> actualNamespace = actual.getNamespace();
         Assertions.assertThat(actualNamespace)
                 .isPresent()
                 .contains(namespace);
@@ -49,7 +50,7 @@ public class MagicModelAssertion extends AbstractAssert<MagicModelAssertion, Mag
     }
 
     public ObjectDefinitionAssertion getObjectById(final String id) {
-        Optional<ObjectDefinition> targetObject = actual.getObjects().stream()
+        final Optional<ObjectDefinition> targetObject = actual.getObjects().stream()
                 .filter(object -> object.getId().isPresent())
                 .filter(object -> id.equals(object.getId().get()))
                 .findFirst();

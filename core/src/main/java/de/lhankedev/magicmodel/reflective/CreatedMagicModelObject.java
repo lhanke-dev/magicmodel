@@ -1,7 +1,12 @@
 package de.lhankedev.magicmodel.reflective;
 
 import de.lhankedev.magicmodel.model.ObjectDefinition;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @Getter

@@ -2,12 +2,17 @@ package de.lhankedev.magicmodel.reflective;
 
 import de.lhankedev.magicmodel.MagicModel;
 import de.lhankedev.magicmodel.model.ObjectDefinition;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-
-import java.util.*;
 
 import static lombok.AccessLevel.PACKAGE;
 
@@ -33,12 +38,13 @@ class MapBasedMagicModel implements MagicModel {
         objectDefinition.getId().ifPresent(id -> modelObjectsById.put(id, createdMagicModelObject));
     }
 
-    Optional<CreatedMagicModelObject> getObjectByDefinition(ObjectDefinition definition) {
+    Optional<CreatedMagicModelObject> getObjectByDefinition(final ObjectDefinition definition) {
         return Optional.ofNullable(modelObjectsByDefinition.get(definition));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> Optional<T> getObjectById(String id, Class<T> expectedClass) {
+    public <T> Optional<T> getObjectById(final String id, final Class<T> expectedClass) {
         return Optional.ofNullable(modelObjectsById.get(id)).map(modelObject -> (T) modelObject.getCreatedObject());
     }
 }

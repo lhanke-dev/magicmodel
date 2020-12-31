@@ -1,13 +1,13 @@
 package de.lhankedev.magicmodel.resources;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,15 +18,15 @@ public class ClassPathResourceProviderTest {
 
     @Test
     void testClassPathResourceScanning() throws IOException {
-        Collection<Resource> resources = cut.findResources();
+        final Collection<Resource> resources = cut.findResources();
         assertThat(resources)
                 .hasSize(1);
-        Optional<Resource> foundResourceOpt = resources.stream().findFirst();
+        final Optional<Resource> foundResourceOpt = resources.stream().findFirst();
         assertThat(foundResourceOpt)
                 .isPresent();
-        Resource foundResource = foundResourceOpt.get();
-        try (InputStream resourceStream = foundResource.open()) {
-            String content = IOUtils.toString(resourceStream, StandardCharsets.UTF_8);
+        final Resource foundResource = foundResourceOpt.get();
+        try (final InputStream resourceStream = foundResource.open()) {
+            final String content = IOUtils.toString(resourceStream, StandardCharsets.UTF_8);
             assertThat(content)
                     .isEqualTo(EXPECTED_CLASSPATH_RESOURCE_CONTENT);
         }

@@ -1,12 +1,13 @@
 package de.lhankedev.magicmodel.assertion;
 
 import de.lhankedev.magicmodel.model.Person;
-import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.api.Assertions;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assertions;
 
 public class PersonsAssertion extends AbstractAssert<PersonsAssertion, Collection<Person>> {
 
@@ -29,10 +30,10 @@ public class PersonsAssertion extends AbstractAssert<PersonsAssertion, Collectio
         Assertions.assertThat(actual)
                 .isNotNull();
 
-        Optional<Person> matchingPerson = actual.stream()
-                .filter(person -> Objects.equals(foreName, person.getForeName())
-                        && Objects.equals(lastName, person.getLastName())
-                        && Objects.equals(age, person.getAge()))
+        final Optional<Person> matchingPerson = actual.stream()
+                .filter(person -> Objects.equals(foreName, person.getForeName()) &&
+                        Objects.equals(lastName, person.getLastName()) &&
+                        Objects.equals(age, person.getAge()))
                 .findAny();
 
         if (matchingPerson.isEmpty()) {

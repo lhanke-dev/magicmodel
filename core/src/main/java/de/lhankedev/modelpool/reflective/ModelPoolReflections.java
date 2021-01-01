@@ -69,7 +69,7 @@ public class ModelPoolReflections {
 
     @SuppressWarnings("unchecked")
     public <T> T createObject(final Class<T> clazz) {
-        final Constructor<T> noArgsConstructor = (Constructor<T>) ReflectionUtils.getConstructors(clazz,
+        final Constructor<T> noArgsConstructor = ReflectionUtils.getConstructors(clazz,
                 constructor -> constructor.getParameterCount() == 0)
                 .stream()
                 .findFirst()

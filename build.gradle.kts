@@ -9,7 +9,3 @@ sonarqube {
         property("sonar.host.url", "https://sonarcloud.io")
     }
 }
-
-tasks {
-    getByName("sonarqube").dependsOn("test")
-}

@@ -19,14 +19,14 @@ sourceSets {
             add("antlrGenImplementation", "org.antlr:antlr4:${antlrVersion}")
         }
     }
-    val main by getting {
+    getByName("main") {
         java {
             setSrcDirs(listOf("src/main/java")) // remove paths appended by antlr plugin
             compileClasspath += antlrGen.output
             runtimeClasspath += antlrGen.output
         }
     }
-    val test by getting {
+    getByName("test") {
         java {
             setSrcDirs(listOf("src/test/java")) // remove paths appended by antlr plugin
             compileClasspath += antlrGen.output
@@ -56,9 +56,7 @@ tasks {
         dependsOn("compileAntlrGenJava")
     }
 
-    getByName("compileAntlrGenJava") {
-        dependsOn("generateGrammarSource")
-    }
+    getByName("compileAntlrGenJava").dependsOn("generateGrammarSource")
 }
 
 checkstyle {

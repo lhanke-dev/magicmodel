@@ -1,6 +1,7 @@
 plugins {
     java
     checkstyle
+    jacoco
 }
 
 repositories {
@@ -32,8 +33,16 @@ dependencies {
     testImplementation( "ch.qos.logback:logback-classic:${logbackVersion}")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks {
+    test {
+        useJUnitPlatform()
+    }
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+        }
+    }
+    getByName("test").finalizedBy("jacocoTestReport")
 }
 
 checkstyle {

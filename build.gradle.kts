@@ -4,7 +4,7 @@ plugins {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "lhanke-dev_magicmodel")
+        property("sonar.projectKey", "lhanke-dev_modelpool")
         property("sonar.organization", "lhanke-dev")
         property("sonar.host.url", "https://sonarcloud.io")
     }

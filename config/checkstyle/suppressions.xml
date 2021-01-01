@@ -5,5 +5,5 @@
         "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-    <suppress checks="MissingJavadocType" files="de[/\\]lhankedev[/\\]magicmodel[/\\]model[/\\]mapping[/\\].*\.java$" />
+    <suppress checks="MissingJavadocType" files="de[/\\]lhankedev[/\\]modelpool[/\\]model[/\\]mapping[/\\].*\.java$" />
 </suppressions>

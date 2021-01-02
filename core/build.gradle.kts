@@ -1,3 +1,7 @@
+import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
+import java.time.Instant
+
 version = "0.0.1"
 
 plugins {
@@ -5,6 +9,7 @@ plugins {
 
     antlr
     `maven-publish`
+    id("com.jfrog.bintray") version bintrayVersion
 }
 
 dependencies {
@@ -81,18 +86,8 @@ checkstyle {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/lhanke-dev/modelpool")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
-                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
     publications {
-        create<MavenPublication>("gpr") {
+        create<MavenPublication>("bintray") {
             from(components["java"])
             pom {
                 name.set("ModelPool")
@@ -117,4 +112,26 @@ publishing {
             }
         }
     }
+}
+
+bintray {
+    user = project.findProperty("bintray.user") as String? ?: System.getenv("BINTRAY_USER")
+    key = project.findProperty("bintray.key") as String? ?: System.getenv("BINTRAY_KEY")
+    setPublications("bintray")
+
+    with(pkg) {
+        repo = "mvn"
+        name = "modelpool"
+        setLicenses("MIT License")
+        vcsUrl = "https://github.com/lhanke-dev/modelpool"
+        with(version) {
+            name = project.name
+            desc = project.version.toString()
+            released = DateTimeFormatter
+                    .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+                    .withZone(ZoneOffset.UTC)
+                    .format(Instant.now())
+        }
+    }
+
 }

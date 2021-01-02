@@ -38,6 +38,6 @@ jobs:
       run: ./gradlew sonarqube --info
     - name: Release
       env:
-        GITHUB_USERNAME: 'lhanke-dev'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: ./gradlew publish -x test
+        BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+        BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
+      run: ./gradlew bintrayUpload -x test

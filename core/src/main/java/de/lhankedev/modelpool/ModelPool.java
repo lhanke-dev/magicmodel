@@ -5,7 +5,7 @@ import java.util.Optional;
 /**
  * Holds object instances that were defined in a *.mp model definition file and instantiated via
  * {@link ModelPoolFactory#createModel(String)}.
- * <br />
+ * <br>
  * Allows to access the created instances in convenient ways.
  */
 public interface ModelPool {

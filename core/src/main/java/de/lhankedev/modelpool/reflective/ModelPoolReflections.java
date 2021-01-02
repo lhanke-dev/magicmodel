@@ -9,15 +9,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
@@ -34,26 +33,20 @@ public class ModelPoolReflections {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelPoolReflections.class);
 
-    public static final ClassLoader RESOURCE_CLASS_LOADER = ModelPoolReflections.class.getClassLoader();
-
+    private final URLClassLoader resourceClassLoader;
     private final Reflections reflections;
 
     public ModelPoolReflections() {
-        this.reflections = setupReflections();
+        final Collection<URL> classPathUrls = ClasspathHelper.forJavaClassPath();
+        this.resourceClassLoader = new URLClassLoader(classPathUrls.toArray(new URL[0]));
+        this.reflections = setupReflections(resourceClassLoader);
     }
 
-    protected Reflections setupReflections() {
+    protected Reflections setupReflections(final URLClassLoader resourceClassLoader) {
         final ResourcesScanner scanner = new ResourcesScanner();
 
-        // this seems to be necessary due to https://github.com/ronmamo/reflections/issues/273 which prevents adding the classloader directly
-        final List<URL> packageUrls = Arrays.stream(RESOURCE_CLASS_LOADER.getDefinedPackages())
-                .map(Package::getName)
-                .flatMap(packageName -> ClasspathHelper.forPackage(packageName).stream())
-                .collect(Collectors.toList());
-
         final ConfigurationBuilder configBuilder = new ConfigurationBuilder()
-                .addUrls(packageUrls)
-                .addClassLoader(ClasspathHelper.contextClassLoader())
+                .addUrls(resourceClassLoader.getURLs())
                 .addScanners(scanner);
 
         return new Reflections(configBuilder);
@@ -184,7 +177,7 @@ public class ModelPoolReflections {
     }
 
     public InputStream openResource(final String classPathLocation) {
-        return RESOURCE_CLASS_LOADER.getResourceAsStream(classPathLocation);
+        return this.resourceClassLoader.getResourceAsStream(classPathLocation);
     }
 
     @SuppressWarnings("unchecked")

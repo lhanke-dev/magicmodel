@@ -10,7 +10,7 @@ public interface Resource {
 
     /**
      * Opens a fresh stream providing *.mp definition in UTF-8 format.
-     * <br />
+     * <br>
      * The stream shall be closed by the caller.
      * Can be called multiple times and provides each time a fresh stream for the *.mp definition content.
      *

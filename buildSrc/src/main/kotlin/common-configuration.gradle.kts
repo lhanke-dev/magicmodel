@@ -1,5 +1,7 @@
+group = "de.lhankedev.modelpool"
+
 plugins {
-    java
+    `java-library`
     checkstyle
     jacoco
 }
@@ -7,7 +9,6 @@ plugins {
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     compileOnly("org.projectlombok:lombok:${lombokVersion}")

@@ -1,8 +1,10 @@
+version = "0.0.1"
+
 plugins {
     id("common-configuration")
 
     antlr
-    `java-library`
+    `maven-publish`
 }
 
 dependencies {
@@ -35,6 +37,13 @@ sourceSets {
     }
 }
 
+java {
+    @Suppress("UnstableApiUsage")
+    withJavadocJar()
+    @Suppress("UnstableApiUsage")
+    withSourcesJar()
+}
+
 tasks {
     generateGrammarSource {
         maxHeapSize = "64m"
@@ -56,6 +65,11 @@ tasks {
         dependsOn("compileAntlrGenJava")
     }
 
+    jar {
+        from(sourceSets.main.get().output)
+        from(sourceSets.getByName("antlrGen").output)
+    }
+
     getByName("compileAntlrGenJava").dependsOn("generateGrammarSource")
 }
 
@@ -64,4 +78,43 @@ checkstyle {
     configFile = file("${rootProject.projectDir.absolutePath}/config/checkstyle/checkstyle.xml")
     // exclude antlr generated sources
     sourceSets = listOf(project.sourceSets.getByName("main"), project.sourceSets.getByName("test"))
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/lhanke-dev/modelpool")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("gpr") {
+            from(components["java"])
+            pom {
+                name.set("ModelPool")
+                description.set("Toolset to generate Java model instances e.g. for testing in a lean, easy and reusable way.")
+                url.set("https://github.com/lhanke-dev/modelpool")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("lhanke")
+                        name.set("Lukas Hanke")
+                        email.set("lukas.hanke11@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git@github.com:lhanke-dev/modelpool.git")
+                    url.set("https://github.com/lhanke-dev/modelpool")
+                }
+            }
+        }
+    }
 }

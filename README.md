@@ -12,20 +12,20 @@ First you need to declare your dependency to the ModelPool project.
 
 Add the following snippet to your maven repositories configuration in pom.xml:
 ```
-    <repository>
-        <id>Bintray/ModelPool</id>
-        <name>ModelPool</name>
-        <url>https://dl.bintray.com/lhanke-dev/mvn</url>
-    </repository>
+<repository>
+    <id>Bintray/ModelPool</id>
+    <name>ModelPool</name>
+    <url>https://dl.bintray.com/lhanke-dev/mvn</url>
+</repository>
 ```
 
 You can then declare the dependency in your dependencies section in the following way:
 ```
-    <dependency>
-        <groupId>de.lhankedev.modelpool</groupId>
-        <artifactId>core</artifactId>
-        <version>0.0.1</version>
-    </dependency>
+<dependency>
+    <groupId>de.lhankedev.modelpool</groupId>
+    <artifactId>core</artifactId>
+    <version>0.0.1</version>
+</dependency>
 ```
 
 ### Gradle Dependency
@@ -34,30 +34,30 @@ First you need to add to the repositories configuration like this:
 
 Groovy:
 ```
-    maven {
-        name 'Bintray/ModelPool'
-        url 'https://dl.bintray.com/lhanke-dev/mvn'
-    }
+maven {
+    name 'Bintray/ModelPool'
+    url 'https://dl.bintray.com/lhanke-dev/mvn'
+}
 ```
 
 Kotlin:
 ```
-    maven {
-        name = "Bintray/ModelPool"
-        url = uri("https://dl.bintray.com/lhanke-dev/mvn")
-    }
+maven {
+    name = "Bintray/ModelPool"
+    url = uri("https://dl.bintray.com/lhanke-dev/mvn")
+}
 ```
 
 In your dependencies section declare the dependency to ModelPool:
 
 Groovy:
 ```
-    testImplementation 'de.lhankedev.modelpool:core:0.0.1'
+testImplementation 'de.lhankedev.modelpool:core:0.0.1'
 ```
 
 Kotlin:
 ```
-    testImplementation("de.lhankedev.modelpool:core:0.0.1")
+testImplementation("de.lhankedev.modelpool:core:0.0.1")
 ```
 
 ### Example usage
@@ -201,21 +201,21 @@ Attributes are listed via hyphens under an object definition and are specified i
 Via the ModelPoolFactory a model can be created and used e.g. in a unit test like this:
 
 ```
-    @Test
-    void testSellCar() {
-        final ModelPoolFactory factory = ModelPoolFactory.getInstance();
-        final ModelPool pool = factory.createModel("CarWithOnePrevOwner");
-    
-        final Car car = pool.getObjectById("exampleCar", Car.class);
-        final Person oldOwner = pool.getObjectById("exampleOwner", Person.class);
-        final Person newOwner = pool.getObjectById("newOwner", Person.class);
+@Test
+void testSellCar() {
+    final ModelPoolFactory factory = ModelPoolFactory.getInstance();
+    final ModelPool pool = factory.createModel("CarWithOnePrevOwner");
+
+    final Car car = pool.getObjectById("exampleCar", Car.class);
+    final Person oldOwner = pool.getObjectById("exampleOwner", Person.class);
+    final Person newOwner = pool.getObjectById("newOwner", Person.class);
         
-        assertThat(car)
-            .isOwnedBy(oldOwner);
-        cut.sellCar(car, newOwner);
-        assertThat(car)
-            .isOwnedBy(newOwner);
-    }
+    assertThat(car)
+        .isOwnedBy(oldOwner);
+    cut.sellCar(car, newOwner);
+    assertThat(car)
+        .isOwnedBy(newOwner);
+}
 ```
 
 ## Reference
@@ -241,16 +241,16 @@ After cloning the repository you can perform the following maven tasks to test/b
 
 Checkstyle:
 ```
-    ./gradlew check -x test
+./gradlew check -x test
 ```
 
 Tests:
 ```
-    ./gradlew test
+./gradlew test
 ```
 During test execution coverage is taken by jacoco automatically and can be found under `build/reports/jacoco/test/html/index.html`
 
 Install to local Maven repository:
 ```
-    ./gradlew publishBintrayPublicationToMavenLocal
+./gradlew publishBintrayPublicationToMavenLocal
 ```

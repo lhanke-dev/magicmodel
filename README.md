@@ -208,9 +208,9 @@ void testSellCar() {
     final ModelPoolFactory factory = ModelPoolFactory.getInstance();
     final ModelPool pool = factory.createModel("CarWithOnePrevOwner");
 
-    final Car car = pool.getObjectById("exampleCar", Car.class);
-    final Person oldOwner = pool.getObjectById("exampleOwner", Person.class);
-    final Person newOwner = pool.getObjectById("newOwner", Person.class);
+    final Car car = pool.getObjectById("exampleCar", Car.class).get();
+    final Person oldOwner = pool.getObjectById("exampleOwner", Person.class).get();
+    final Person newOwner = pool.getObjectById("newOwner", Person.class).get();
         
     assertThat(car)
         .isOwnedBy(oldOwner);

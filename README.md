@@ -4,6 +4,8 @@
 # ModelPool
 Generate Java model instances e.g. for testing in a lean, easy and reusable way.
 
+**Hint**: _The project is in an experimental state. Breaking changes may occur. They will be documented as part of the corresponding release. Feedback is highly appreciated._
+
 ## Getting started
 
 First you need to declare your dependency to the ModelPool project.

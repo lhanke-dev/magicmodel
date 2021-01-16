@@ -1,6 +1,7 @@
 package de.lhankedev.modelpool.reflective;
 
 import de.lhankedev.modelpool.ModelPool;
+import de.lhankedev.modelpool.ModelPoolCreationContext;
 import de.lhankedev.modelpool.ModelPoolFactory;
 import de.lhankedev.modelpool.antlr.ModelPoolLexer;
 import de.lhankedev.modelpool.antlr.ModelPoolParser;
@@ -46,37 +47,42 @@ public class ReflectiveModelPoolFactory implements ModelPoolFactory {
 
     protected List<ModelCreationPhase> setupPhases() {
         return Arrays.asList(
+                // order is relevant
                 new ObjectCreationPhase(),
-                new PrimitiveFieldInstantiationPhase(),
-                new ObjectLinkingPhase()
+                new TerminalFieldCollectionPhase(),
+                new PlaceholderFieldCollectionPhase(),
+                new ReferenceFieldCollectionPhase(),
+                new FieldInjectionPhase()
         );
     }
 
     @Override
-    public ModelPool createModel(final String modelName) throws ModelPoolCreationException {
-
+    public ModelPool createModel(final ModelPoolCreationContext context) throws ModelPoolCreationException {
         final Collection<ModelPoolDefinition> modelDefinitionPoolDefinitions = getModelPoolDefinitions();
         final List<ModelPoolDefinition> modelDefinitions = modelDefinitionPoolDefinitions.stream()
-                .filter(modelPool -> modelPool.getName().equals(modelName))
+                .filter(modelPool -> modelPool.getName().equals(context.getModelname()))
                 .collect(Collectors.toList());
 
         if (modelDefinitions.isEmpty()) {
-            throw new ModelPoolCreationException(format("Could not find model definition with name %s", modelName));
+            throw new ModelPoolCreationException(
+                    format("Could not find model definition with name %s", context.getModelname()));
         } else if (modelDefinitions.size() > 1) {
             throw new ModelPoolCreationException(format("Found ambiguous model definitions with name %s on the " +
-                    "classpath. Please make model names unique.", modelName));
+                    "classpath. Please make model names unique.", context.getModelname()));
         }
 
         final ModelPoolDefinition modelPoolDefinition = modelDefinitions.get(0);
-        final ModelCreationContext context = new ModelCreationContext(modelPoolDefinition);
+        final ReflectiveCreationContext internalCreationContext = new ReflectiveCreationContext(modelPoolDefinition,
+                context);
 
         try {
-            phases.forEach(phase -> phase.perform(context));
+            phases.forEach(phase -> phase.perform(internalCreationContext));
         } catch (final StreamSupportingModelCreationException e) {
-            throw new ModelPoolCreationException(format("Failed to create model with name %s", modelName), e);
+            throw new ModelPoolCreationException(format("Failed to create model with name %s", context.getModelname()),
+                    e);
         }
 
-        return context.getModelPool();
+        return internalCreationContext.getModelPool();
     }
 
     private Collection<ModelPoolDefinition> getModelPoolDefinitions() {

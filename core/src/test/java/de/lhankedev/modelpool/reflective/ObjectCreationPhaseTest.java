@@ -1,5 +1,6 @@
 package de.lhankedev.modelpool.reflective;
 
+import de.lhankedev.modelpool.ModelPoolCreationContext;
 import de.lhankedev.modelpool.model.Car;
 import de.lhankedev.modelpool.model.Engine;
 import de.lhankedev.modelpool.model.ModelPoolDefinition;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class ObjectCreationPhaseTest {
 
@@ -30,9 +32,10 @@ class ObjectCreationPhaseTest {
                 objectWithId, objectWithoutId
         ));
         modelDefinition.setNamespace(Optional.of(Car.class.getPackageName()));
-        final ModelCreationContext modelCreationContext = new ModelCreationContext(modelDefinition);
+        final ReflectiveCreationContext reflectiveCreationContext = new ReflectiveCreationContext(modelDefinition,
+                Mockito.mock(ModelPoolCreationContext.class));
 
-        final ModelCreationContext contextWithCreatedObjects = cut.perform(modelCreationContext);
+        final ReflectiveCreationContext contextWithCreatedObjects = cut.perform(reflectiveCreationContext);
 
         final List<CreatedModelPoolObject> createdObjects = contextWithCreatedObjects.getMapBasedModelPool()
                 .getCreatedObjects();

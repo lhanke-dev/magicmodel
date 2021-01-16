@@ -1,6 +1,7 @@
 package de.lhankedev.modelpool.reflective;
 
 import de.lhankedev.modelpool.ModelPool;
+import de.lhankedev.modelpool.ModelPoolCreationContext;
 import de.lhankedev.modelpool.model.ModelPoolDefinition;
 
 import lombok.Getter;
@@ -15,10 +16,11 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(makeFinal = true, level = PRIVATE)
 @RequiredArgsConstructor
 @ToString
-public class ModelCreationContext {
+public class ReflectiveCreationContext {
 
     MapBasedModelPool mapBasedModelPool = new MapBasedModelPool();
     ModelPoolDefinition parsedModel;
+    ModelPoolCreationContext clientContext;
 
     public ModelPool getModelPool() {
         return this.mapBasedModelPool;

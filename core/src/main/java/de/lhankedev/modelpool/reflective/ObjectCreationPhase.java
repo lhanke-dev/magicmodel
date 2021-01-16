@@ -15,14 +15,14 @@ public class ObjectCreationPhase implements ModelCreationPhase {
     }
 
     @Override
-    public ModelCreationContext perform(final ModelCreationContext context) {
+    public ReflectiveCreationContext perform(final ReflectiveCreationContext context) {
         context.getParsedModel()
                 .getObjects()
                 .forEach(objectDefinition -> this.createObject(context, objectDefinition));
         return context;
     }
 
-    private void createObject(final ModelCreationContext context, final ObjectDefinition objectDefinition) {
+    private void createObject(final ReflectiveCreationContext context, final ObjectDefinition objectDefinition) {
         final Optional<String> namespaceOpt = context.getParsedModel().getNamespace();
         final String qualifiedType = namespaceOpt
                 .map(namespace -> format("%s.%s", namespace, objectDefinition.getType()))

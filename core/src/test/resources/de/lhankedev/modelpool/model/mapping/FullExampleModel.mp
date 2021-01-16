@@ -4,7 +4,7 @@ Namespace: de.lhankedev.modelpool.model
 Car(emptyCar)
 Car(testCar):
     - manufacturer: TestManufacturer
-    - model: TestModel
+    - model: ${testModel}
     - engine: #testEngine
     - previousOwners:
         - #elePhant

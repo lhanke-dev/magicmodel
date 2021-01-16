@@ -44,7 +44,7 @@ class FirstMatchExecutorTest {
         assertThat(firstExecuted.get())
                 .isEqualTo(1);
         assertThat(secondExecuted.get())
-                .isEqualTo(0);
+                .isZero();
     }
 
     @Test
@@ -59,9 +59,9 @@ class FirstMatchExecutorTest {
         cut.perform();
 
         assertThat(firstExecuted.get())
-                .isEqualTo(0);
+                .isZero();
         assertThat(secondExecuted.get())
-                .isEqualTo(0);
+                .isZero();
     }
 
 

@@ -16,13 +16,13 @@ public interface ModelPoolFactory {
      * <br>
      * On each call of this method a new model instance is created and returned.
      *
-     * @param modelName the name of the model that a new instance shall be created for.
-     *                  Needs to be specified in any of the *.mp files known to the factory.
+     * @param context {@link ModelPoolCreationContext} instance that holds runtime metadata that is relevant for model
+     *                assembly
      * @return the {@link ModelPool} instance that belongs to the definition with name of the modelName param
      * @throws ModelPoolCreationException in case the model cannot be found or the name is ambiguous or anything
      *                                    else goes wrong during model initialization
      */
-    ModelPool createModel(String modelName) throws ModelPoolCreationException;
+    ModelPool createModel(ModelPoolCreationContext context) throws ModelPoolCreationException;
 
     /**
      * Get a {@link ModelPoolFactory} instance. Defaults to a reflection based {@link ModelPoolFactory} implementation.

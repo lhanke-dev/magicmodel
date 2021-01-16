@@ -196,4 +196,14 @@ public class ModelPoolReflections {
         return matchingFields.stream().map(Field::getName).findFirst();
     }
 
+    public Field fieldByName(final Class<?> clazz, final String fieldName) {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (final NoSuchFieldException e) {
+            throw new StreamSupportingModelCreationException(
+                    format("Could not resolve parent reference for field with name %s in target class %s.", fieldName,
+                            clazz));
+        }
+    }
+
 }

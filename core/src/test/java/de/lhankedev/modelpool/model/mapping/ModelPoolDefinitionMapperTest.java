@@ -51,19 +51,19 @@ class ModelPoolDefinitionMapperTest {
             carAssertion.getAttributeByName("manufacturer")
                     .isNotNull()
                     .hasName("manufacturer")
-                    .hasValues("TestManufacturer");
+                    .hasTerminalValues("TestManufacturer");
             carAssertion.getAttributeByName("model")
                     .isNotNull()
                     .hasName("model")
-                    .hasValues("TestModel");
+                    .hasPlaceholderValues("testModel");
             carAssertion.getAttributeByName("engine")
                     .isNotNull()
                     .hasName("engine")
-                    .hasValues("#testEngine");
+                    .hasReferenceValues("testEngine");
             carAssertion.getAttributeByName("previousOwners")
                     .isNotNull()
                     .hasName("previousOwners")
-                    .hasValues("#dinoSaur", "#elePhant");
+                    .hasReferenceValues("dinoSaur", "elePhant");
 
             final ObjectDefinitionAssertion engineAssertion = exampleModelAssertion.getObjectById("testEngine")
                     .isNotNull()
@@ -73,11 +73,11 @@ class ModelPoolDefinitionMapperTest {
             engineAssertion.getAttributeByName("horsePower")
                     .isNotNull()
                     .hasName("horsePower")
-                    .hasValues("205");
+                    .hasTerminalValues("205");
             engineAssertion.getAttributeByName("displacement")
                     .isNotNull()
                     .hasName("displacement")
-                    .hasValues("4009");
+                    .hasTerminalValues("4009");
 
             final ObjectDefinitionAssertion ownerAssertion = exampleModelAssertion.getObject(3)
                     .isNotNull()
@@ -87,15 +87,15 @@ class ModelPoolDefinitionMapperTest {
             ownerAssertion.getAttributeByName("foreName")
                     .isNotNull()
                     .hasName("foreName")
-                    .hasValues("Lion");
+                    .hasTerminalValues("Lion");
             ownerAssertion.getAttributeByName("lastName")
                     .isNotNull()
                     .hasName("lastName")
-                    .hasValues("King");
+                    .hasTerminalValues("King");
             ownerAssertion.getAttributeByName("age")
                     .isNotNull()
                     .hasName("age")
-                    .hasValues("99");
+                    .hasTerminalValues("99");
 
             final ObjectDefinitionAssertion previousOwner1Assertion = exampleModelAssertion.getObjectById("elePhant")
                     .isNotNull()
@@ -104,15 +104,15 @@ class ModelPoolDefinitionMapperTest {
             previousOwner1Assertion.getAttributeByName("foreName")
                     .isNotNull()
                     .hasName("foreName")
-                    .hasValues("Ele");
+                    .hasTerminalValues("Ele");
             previousOwner1Assertion.getAttributeByName("lastName")
                     .isNotNull()
                     .hasName("lastName")
-                    .hasValues("Phant");
+                    .hasTerminalValues("Phant");
             previousOwner1Assertion.getAttributeByName("age")
                     .isNotNull()
                     .hasName("age")
-                    .hasValues("28");
+                    .hasTerminalValues("28");
 
             final ObjectDefinitionAssertion previousOwner2Assertion = exampleModelAssertion.getObjectById("dinoSaur")
                     .isNotNull()
@@ -121,15 +121,15 @@ class ModelPoolDefinitionMapperTest {
             previousOwner2Assertion.getAttributeByName("foreName")
                     .isNotNull()
                     .hasName("foreName")
-                    .hasValues("Dino");
+                    .hasTerminalValues("Dino");
             previousOwner2Assertion.getAttributeByName("lastName")
                     .isNotNull()
                     .hasName("lastName")
-                    .hasValues("Saur");
+                    .hasTerminalValues("Saur");
             previousOwner2Assertion.getAttributeByName("age")
                     .isNotNull()
                     .hasName("age")
-                    .hasValues("21");
+                    .hasTerminalValues("21");
         }
 
     }

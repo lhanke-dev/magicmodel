@@ -1,6 +1,7 @@
 package de.lhankedev.modelpool.reflective;
 
 import de.lhankedev.modelpool.ModelPool;
+import de.lhankedev.modelpool.ModelPoolCreationContext;
 import de.lhankedev.modelpool.ModelPoolFactory;
 import de.lhankedev.modelpool.assertion.EngineAssertion;
 import de.lhankedev.modelpool.assertion.MobilePhoneAssertion;
@@ -23,7 +24,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testTerminalSingleValueFields() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("TerminalFieldSingleValues");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("TerminalFieldSingleValues")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<TerminalTestType> testTypes = modelPool.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
@@ -40,7 +45,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testDirectFieldAccess() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("DirectFieldAccess");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("DirectFieldAccess")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<MobilePhone> phone = modelPool.getObjectById("testPhone", MobilePhone.class);
 
         Assertions.assertThat(phone)
@@ -54,7 +63,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testTerminalCollectionValueFields() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("TerminalFieldCollectionValues");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("TerminalFieldCollectionValues")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<TerminalTestType> testTypes = modelPool.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
@@ -71,7 +84,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testTerminalListValueFields() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("TerminalFieldListValues");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("TerminalFieldListValues")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<TerminalTestType> testTypes = modelPool.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
@@ -88,7 +105,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testTerminalSetValueFields() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("TerminalFieldSetValues");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("TerminalFieldSetValues")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<TerminalTestType> testTypes = modelPool.getObjectById("testPrimitives", TerminalTestType.class);
 
         Assertions.assertThat(testTypes)
@@ -105,7 +126,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testReferenceInSingleAttribute() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("SingleValueReference");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("SingleValueReference")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<Car> car = modelPool.getObjectById("testCar", Car.class);
 
         Assertions.assertThat(car)
@@ -119,7 +144,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testReferenceInCollectionAttribute() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("CollectionValueReference");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("CollectionValueReference")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<Car> car = modelPool.getObjectById("testCar", Car.class);
 
         Assertions.assertThat(car)
@@ -133,7 +162,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testQualifiedParentReference() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("QualifiedParentReference");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("QualifiedParentReference")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<Car> car = modelPool.getObjectById("testCar", Car.class);
 
         Assertions.assertThat(car)
@@ -148,7 +181,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testImplicitParentReference() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("ImplicitParentReference");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("ImplicitParentReference")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<Car> car = modelPool.getObjectById("testCar", Car.class);
 
         Assertions.assertThat(car)
@@ -162,7 +199,11 @@ class ReflectiveModelPoolFactoryTest {
 
     @Test
     void testParentCollectionReference() throws ModelPoolCreationException {
-        final ModelPool modelPool = factory.createModel("ParentCollectionReference");
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("ParentCollectionReference")
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
         final Optional<Car> car = modelPool.getObjectById("testCar", Car.class);
 
         Assertions.assertThat(car)
@@ -171,6 +212,31 @@ class ReflectiveModelPoolFactoryTest {
         PersonsAssertion.assertThat(car.get().getPreviousOwners())
                 .contains("Ele", "Phant", 28)
                 .contains("Dino", "Saur", 21);
+    }
+
+    @Test
+    void testPlaceholderSubstitution() throws ModelPoolCreationException {
+        final String manufacturer = "testManufacturerPlaceholder";
+        final int weight = 654;
+        final double screenSize = 3.1;
+
+        final ModelPoolCreationContext context = ModelPoolCreationContext.builder()
+                .modelname("PlaceholderSubstitution")
+                .placeholderValue("manufacturer", manufacturer)
+                .placeholderValue("weight", weight)
+                .placeholderValue("screenSize", screenSize)
+                .build();
+
+        final ModelPool modelPool = factory.createModel(context);
+        final Optional<MobilePhone> phone = modelPool.getObjectById("testPhone", MobilePhone.class);
+
+        Assertions.assertThat(phone)
+                .isPresent();
+
+        MobilePhoneAssertion.assertThat(phone.get())
+                .hasManufacturer(manufacturer)
+                .hasWeight(weight)
+                .hasScreenSize(screenSize);
     }
 
 

@@ -1,7 +1,5 @@
 package de.lhankedev.modelpool.model;
 
-import java.util.List;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +12,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
-public class AttributeDefinition {
+public class AttributeValueDefinition {
 
-    String attributeName;
-    List<AttributeValueDefinition> attributeValues;
+    ValueType type;
+    String value;
 
 }

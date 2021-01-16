@@ -42,6 +42,10 @@ class MapBasedModelPool implements ModelPool {
         return Optional.ofNullable(modelObjectsByDefinition.get(definition));
     }
 
+    Optional<CreatedModelPoolObject> getCreatedModelPoolObjectById(final String id) {
+        return Optional.ofNullable(modelObjectsById.get(id));
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> Optional<T> getObjectById(final String id, final Class<T> expectedClass) {
